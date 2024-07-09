@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+authors = ["Taku <nightcountrycooper@gmail.com>"]
+description  = ""
+
+
+[tool.poetry.dependencies]
+python = "3.10.12"
+fastapi = "^0.109.2"
+uvicorn = "^0.27.1"
+sqlalchemy = "^2.0.26"
+pymysql = "^1.1.0"
+pydantic = "^2.6.1"
+pydantic-settings = "^2.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79

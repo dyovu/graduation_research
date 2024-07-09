@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+  db: 
+    container_name: "db_mcp"
+    image: mysql:8.0-debian
+    platform: linux/x86_64
+    env_file:
+      - ./db/.env
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    container_name: "backend_mcp"
+    build: ./backend
+    environment:
+      DB_HOST: db
+    volumes:
+      - ./backend:/backend
+    tty: true
+    ports:
+      - "8000:8000"  # fastAPIのHTTP用TCPポート
+      - "12351:12351/udp"  # UDPポート
+    # depends_on:
+    #   - db
+
+  frontend:
+    container_name: "frontend_mcp"
+    build: ./frontend
+    volumes:
+      - ./frontend:/src
+    command: sh -c "cd app && PORT=3000 yarn start"
+    ports:
+      - "3000:3000"
+    tty: true
+  
+  
+  phpmyadmin:
+    container_name: "phpmyadmin_mcp"
+    image: "phpmyadmin/phpmyadmin"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db # mysqlのサービス名を指定
+      - PMA_USER=mcp_user # phpmyadminへログインするユーザ
+      - PMA_PASSWORD=password # phpmyadminにログインするユーザのパスワード
+    ports:
+      - "4040:80"
+    volumes:
+      - ./phpmyadmin/sessions:/sessions
+
+volumes:
+  db-data:
