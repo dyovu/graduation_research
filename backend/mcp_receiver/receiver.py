@@ -46,6 +46,7 @@ class Receiver():
         while self.running:
             try:
                 print('----------------------------------')
+                print('queue size is')
                 #mocopiからバイナリーデータ送られてくるのを受け取る
                 message, client_addr = self.socket.recvfrom(2048)
                 # print(message)

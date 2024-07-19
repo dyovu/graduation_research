@@ -54,4 +54,5 @@ class Config(BaseSettings):
 
 # TODO: Change env_file depending on the environment
 env_file = ".env"
+
 config = Config(_env_file=env_file)
