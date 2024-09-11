@@ -18,7 +18,7 @@ class Receiver():
         self.socket = None
         self.process_packet = process_packet
     
-    def get(self, queue):
+    def start(self, queue):
         print("run")
         self.queue = queue
         self.thread = threading.Thread(target=self.loop, args=())
@@ -40,8 +40,6 @@ class Receiver():
         self.socket.bind((self.addr, self.port))
         #データが送られてこない時にずっと待受をしているのを防ぐ
         self.socket.settimeout(1.0)
-
-        #多分スレッドの開始だけしてstopの呼び出しでqueueの中身を持ってくる？
 
         while self.running:
             try:

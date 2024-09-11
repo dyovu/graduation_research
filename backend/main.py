@@ -1,28 +1,35 @@
-from fastapi import (FastAPI, HTTPException, Depends, status)
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-
+"""
+ここから変更した新しいコード
+"""
 import uvicorn
-import queue
-import asyncio
-import datetime
+import logging
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from mcp_receiver.receiver import Receiver
-from sql_app.database import get_db
-from sql_app.put_data import create_data
-from service.insert_data import insert_all_data
-from service.insert_data import insert_some_data
+# 
+# ここにAPIのエンドポイントとなるファイルを追加していく
+# 
+from backend.api import (
+    insertion_router,
 
+)
+from backend.config import config
+
+if config.deploy_env != "production":
+    logging.basicConfig(level=logging.DEBUG)
+
+# 
+# ここにAPIのエンドポイントとなるファイルを追加していく
+# 
 app = FastAPI()
-recv = Receiver()
-#すべてのデータが入っているqueueです
-data_queue = queue.Queue()
+app.include_router(insertion_router)
+app.include_router()
+
 
 # CORS設定
 origins = [
     "http://localhost:3000",
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -30,40 +37,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-
-@app.get("/process_data")
-async def process_data():
-    #もしdata_queueがからでない場合からに初期化したほうがいいかも
-    recv.get(data_queue)
-    return {"message": "get_process_data"}
-
-
-
-@app.get("/stop_put_data")
-async def process(db: Session = Depends(get_db)):
-    print("stop_put_data")
-    recv.stop()
-
-    return insert_all_data(db=db, q = data_queue)
-
-
-
-@app.get("/insert_some_data")
-async def insertTest(db: Session = Depends(get_db)):
-    print("insert_some_data")
-    recv.stop()
-    
-    return insert_some_data(db=db, q = data_queue, n = 1)
-
-
+"""
+ここまで
+"""
 
 
 if __name__ == "__main__":

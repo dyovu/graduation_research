@@ -45,7 +45,8 @@ def process_packet(message):
         data["fram"]["uttm"] = int(struct.unpack("@d", data["fram"]["uttm"])[0])
         # ここでuttmをUNIX時間からUTC時間の文字列に変換する
         data["fram"]["uttm"] = datetime.datetime.fromtimestamp(data["fram"]["uttm"], datetime.timezone(datetime.timedelta(hours=9)))
-        data["fram"]["uttm"] = data["fram"]["uttm"].strftime('%Y-%m-%d %H:%M:%S')
+        # 文字列変換フォーマット、DBに入れるならdatetime型でいれるから文字列変換入らない
+        # data["fram"]["uttm"] = data["fram"]["uttm"].strftime('%Y-%m-%d %H:%M:%S')
         print(data["fram"]["uttm"])
         for item in data["fram"]["btrs"]:
             item["bnid"] = struct.unpack("@H", item["bnid"])[0]
