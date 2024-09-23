@@ -13,6 +13,8 @@ sqlalchemy = "^2.0.26"
 pymysql = "^1.1.0"
 pydantic = "^2.6.1"
 pydantic-settings = "^2.1.0"
+numpy = "*"
+scipy = "*"
 
 [build-system]
 requires = ["poetry-core"]

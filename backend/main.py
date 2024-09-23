@@ -11,7 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # 
 from backend.api import (
     insertion_router,
-
+    retrieve_router,
+    compare_router,
 )
 from backend.config import config
 
@@ -23,7 +24,8 @@ if config.deploy_env != "production":
 # 
 app = FastAPI()
 app.include_router(insertion_router)
-app.include_router()
+app.include_router(retrieve_router)
+app.include_router(compare_router)
 
 
 # CORS設定

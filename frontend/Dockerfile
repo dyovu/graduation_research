@@ -1,10 +1,10 @@
 FROM node:21-alpine3.17
 
-WORKDIR /src
+WORKDIR /frontend/app
 
-COPY app/package*.json ./
+COPY ./app .
 
 RUN npm install
 
-COPY . ./
+
 

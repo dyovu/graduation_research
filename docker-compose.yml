@@ -18,7 +18,7 @@ services:
     environment:
       DB_HOST: db
     volumes:
-      - ./backend:/backend
+      - ./backend:/app/backend
     tty: true
     ports:
       - "8000:8000"  # fastAPIのHTTP用TCPポート
@@ -30,8 +30,8 @@ services:
     container_name: "frontend_mcp"
     build: ./frontend
     volumes:
-      - ./frontend:/src
-    command: sh -c "cd app && PORT=3000 yarn start"
+      - ./frontend/app:/frontend/app
+    command: sh -c "PORT=3000 yarn start"
     ports:
       - "3000:3000"
     tty: true

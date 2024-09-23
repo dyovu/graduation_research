@@ -1,0 +1,46 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+import numpy as np
+
+from backend.database import get_db
+import backend.schemas.body_parts as body_parts_schemas
+import backend.models.body_parts as body_parts_models
+from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
+
+router = APIRouter(tags=["retrieve"])
+
+@router.get(
+    "/get_right_arm",
+    response_model = list[body_parts_schemas.RightArmRead],
+)
+async def get_right_arm_data(
+    db: Session = Depends(get_db),
+    db_data_manager: DbDataManager = Depends(get_db_data_manager),
+    skip: int = 0,
+    limit: int = 10,
+):
+    raw_data = db.query(body_parts_models.RightArm).offset(skip).limit(limit).all()
+
+    if raw_data is []:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Item not found",
+        )
+    
+    formatted_data = [body_parts_schemas.RightArmRead.from_orm(record) for record in raw_data]
+
+    # データを変換してDbDataManagerに適用
+    transform_data_to_db_manager(db_data_manager, formatted_data)
+    
+    print(db_data_manager.right_arm)
+
+    return formatted_data
+
+
+def transform_data_to_db_manager(db_data_manager, data_list):
+    # r_shoulder, r_uparm, r_lowarm, r_handのデータをNumPy配列に変換してDbDataManagerにセット
+    db_data_manager.right_arm['r_shoulder'] = np.array([data.r_shoulder for data in data_list]).T
+    db_data_manager.right_arm['r_uparm'] = np.array([data.r_uparm for data in data_list]).T
+    db_data_manager.right_arm['r_lowarm'] = np.array([data.r_lowarm for data in data_list]).T
+    db_data_manager.right_arm['r_hand'] = np.array([data.r_hand for data in data_list]).T
+

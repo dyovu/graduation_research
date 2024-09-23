@@ -53,6 +53,6 @@ class Config(BaseSettings):
 
 
 # TODO: Change env_file depending on the environment
-env_file = ".env"
+env_file = "./backend/.env"
 
 config = Config(_env_file=env_file)

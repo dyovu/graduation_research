@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, Column, DateTime, Double, Integer
 from sqlalchemy.orm import relationship
-from sql_app.database import Base
 
+from backend.database import Base
 
 # ここはデータベースのテーブルごとのクラスをつくる
 # 本当はテーブルごとのまとまりとしてファイルを作るはず

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from sql_app.config import config
+from backend.config import config
 
 db_engine = create_engine(config.mysql_url.unicode_string())
 db_session = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
