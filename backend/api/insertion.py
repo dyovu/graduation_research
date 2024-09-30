@@ -81,5 +81,10 @@ async def insert_data_to_db(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="q is empty",
         )
-    create_body_parts_data.insert_right_arm(db, q)
+    
+    # 右手回転
+    # create_body_parts_data.insert_right_arm_turn(db, q)
+
+    # 左手
+    create_body_parts_data.insert_left_arm_turn(db, q)
     return {"message": "Data inserted into the database"}

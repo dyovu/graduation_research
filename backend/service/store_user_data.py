@@ -1,6 +1,6 @@
 from backend.manager.compare_manager import CompareManager
 
-def insert_right_arm(data, compare_manager:CompareManager):
+def insert_real_time_data(data, compare_manager:CompareManager):
     
     motion_data = data["fram"]["btrs"]
     index = compare_manager.current_index
@@ -12,5 +12,10 @@ def insert_right_arm(data, compare_manager:CompareManager):
         compare_manager.right_arm["r_uparm"][i][index] = motion_data[16]["tran"][i]
         compare_manager.right_arm["r_lowarm"][i][index] = motion_data[17]["tran"][i]
         compare_manager.right_arm["r_hand"][i][index] = motion_data[18]["tran"][i]
+
+        compare_manager.left_arm["l_shoulder"][i][index] = motion_data[15]["tran"][i]
+        compare_manager.left_arm["l_uparm"][i][index] = motion_data[16]["tran"][i]
+        compare_manager.left_arm["l_lowarm"][i][index] = motion_data[17]["tran"][i]
+        compare_manager.left_arm["l_hand"][i][index] = motion_data[18]["tran"][i]
     compare_manager.current_index += 1
 

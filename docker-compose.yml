@@ -17,14 +17,16 @@ services:
     build: ./backend
     environment:
       DB_HOST: db
+      PULSE_SERVER: docker.for.mac.localhost
     volumes:
       - ./backend:/app/backend
+      - type: bind
+        source: ~/.config/pulse
+        target: /root/.config/pulse
     tty: true
     ports:
       - "8000:8000"  # fastAPIのHTTP用TCPポート
       - "12351:12351/udp"  # UDPポート
-    # depends_on:
-    #   - db
 
   frontend:
     container_name: "frontend_mcp"

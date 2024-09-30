@@ -1,18 +1,26 @@
-FROM python:3.10.12-slim
+FROM python:3.12.6
 
-WORKDIR /app
+WORKDIR /app/backend
 
-# RUN pip install -r requirements.txt
+# pydubのインストール
+# RUN apt-get update && apt-get install -y libasound-dev ffmpeg && apt-get clean
+
+
+
+RUN apt-get update && \apt-get install -y pulseaudio
 RUN pip install --no-cache-dir poetry==1.7.1
 
-COPY pyproject.toml poetry.lock* /app/
-
+COPY pyproject.toml poetry.lock* ./
 
 RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi
+    poetry install --no-interaction --no-ansi 
 
+# pygame を直接インストール
+RUN pip install pygame
 
-COPY . /app/backend
+COPY . /
+
+WORKDIR /app
 
 # エントリーポイントスクリプトを実行
 CMD ["./backend/entrypoint.sh"]

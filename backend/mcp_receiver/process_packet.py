@@ -47,7 +47,7 @@ def process_packet(message):
         data["fram"]["uttm"] = datetime.datetime.fromtimestamp(data["fram"]["uttm"], datetime.timezone(datetime.timedelta(hours=9)))
         # 文字列変換フォーマット、DBに入れるならdatetime型でいれるから文字列変換入らない
         # data["fram"]["uttm"] = data["fram"]["uttm"].strftime('%Y-%m-%d %H:%M:%S')
-        print(data["fram"]["uttm"])
+        # print(data["fram"]["uttm"])
         for item in data["fram"]["btrs"]:
             item["bnid"] = struct.unpack("@H", item["bnid"])[0]
             item["tran"] = struct.unpack("@fffffff", item["tran"])
