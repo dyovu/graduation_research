@@ -21,9 +21,9 @@ class InsertionManager:
             cls._instance.data_queue = queue.Queue()
         return cls._instance
 
-    def start(self):
+    def start(self, compare_manager):
         if not self.receiver.running:
-            self.receiver.start_insert(self.data_queue)
+            self.receiver.start_insert(self.data_queue, compare_manager)
         else:
             raise ValueError("Receiver is already running")
 
@@ -35,6 +35,10 @@ class InsertionManager:
 
     def get_data(self):
         return self.data_queue.get() if not self.data_queue.empty() else None
+    
+    def reset(self):
+        while not self.data_queue.empty():
+            self.data_queue.get_nowait()
     
 
 def get_insertion_manager():

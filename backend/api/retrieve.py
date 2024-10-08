@@ -18,14 +18,12 @@ async def get_right_arm_data(
     db_data_manager: DbDataManager = Depends(get_db_data_manager),
 ):
     skip = 0
-    limit = db_data_manager.right_arm_frame
+    limit_r = db_data_manager.right_arm_frame
+    limit_l = db_data_manager.left_arm_frame
 
-    """
-    いかのmodelを書き換えることで取得するDBのdatを変える
-    """
     # 右手
-    raw_data_right_arm = db.query(body_parts_models.RightArmTurn).offset(skip).limit(limit).all()
-    if raw_data_right_arm is []:
+    raw_data_right_arm = db.query(body_parts_models.RightArmTurn).offset(skip).limit(limit_r).all()
+    if not raw_data_right_arm:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Item not found",
@@ -36,8 +34,8 @@ async def get_right_arm_data(
 
 
     # 左手
-    raw_data_left_arm = db.query(body_parts_models.LeftArmTurn).offset(skip).limit(limit).all()
-    if raw_data_left_arm is []:
+    raw_data_left_arm = db.query(body_parts_models.LeftArmTurn).offset(skip).limit(limit_l).all()
+    if not raw_data_left_arm:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Item not found",
@@ -45,12 +43,16 @@ async def get_right_arm_data(
     formatted_left_arm_data = [body_parts_schemas.LeftArmRead.from_orm(record) for record in raw_data_left_arm]
     # データを変換してDbDataManagerに適用
     transform_left_arm_data(db_data_manager, formatted_left_arm_data)
-    
+
+    transform_left_arm_time_data(db_data_manager, formatted_left_arm_data)
+
 
     print(db_data_manager.right_arm)
     print("data size of r arm: ", db_data_manager.right_arm_frame)
     print()
     print(db_data_manager.left_arm)
+    print()
+    print(db_data_manager.left_arm_time)
     print("data size of l arm: ", db_data_manager.left_arm_frame)
     
 
@@ -59,17 +61,24 @@ async def get_right_arm_data(
 
 def transform_right_arm_data(db_data_manager, data_list):
     # r_shoulder, r_uparm, r_lowarm, r_handのデータをNumPy配列に変換してDbDataManagerにセット
-    db_data_manager.right_arm['r_shoulder'] = np.array([data.r_shoulder for data in data_list]).T
-    db_data_manager.right_arm['r_uparm'] = np.array([data.r_uparm for data in data_list]).T
-    db_data_manager.right_arm['r_lowarm'] = np.array([data.r_lowarm for data in data_list]).T
-    db_data_manager.right_arm['r_hand'] = np.array([data.r_hand for data in data_list]).T
-
-
+    db_data_manager.right_arm[0] = np.array([data.r_shoulder for data in data_list]).T
+    db_data_manager.right_arm[1] = np.array([data.r_uparm for data in data_list]).T
+    db_data_manager.right_arm[2] = np.array([data.r_lowarm for data in data_list]).T
+    db_data_manager.right_arm[3] = np.array([data.r_hand for data in data_list]).T
 
 def transform_left_arm_data(db_data_manager, data_list):
     # r_shoulder, r_uparm, r_lowarm, r_handのデータをNumPy配列に変換してDbDataManagerにセット
-    db_data_manager.left_arm['l_shoulder'] = np.array([data.l_shoulder for data in data_list]).T
-    db_data_manager.left_arm['l_uparm'] = np.array([data.l_uparm for data in data_list]).T
-    db_data_manager.left_arm['l_lowarm'] = np.array([data.l_lowarm for data in data_list]).T
-    db_data_manager.left_arm['l_hand'] = np.array([data.l_hand for data in data_list]).T
+    db_data_manager.left_arm[0] = np.array([data.l_shoulder for data in data_list]).T
+    db_data_manager.left_arm[1] = np.array([data.l_uparm for data in data_list]).T
+    db_data_manager.left_arm[2] = np.array([data.l_lowarm for data in data_list]).T
+    db_data_manager.left_arm[3] = np.array([data.l_hand for data in data_list]).T
 
+
+# 時間ごとの配列の組みをそれぞれの部位に入れていく
+def transform_left_arm_time_data(db_data_manager, data_list):
+    for i, data in enumerate(data_list):
+        # 各部位のデータを行として追加
+        db_data_manager.left_arm_time[0][i] = data.l_shoulder
+        db_data_manager.left_arm_time[1][i] = data.l_uparm     
+        db_data_manager.left_arm_time[2][i] = data.l_lowarm     
+        db_data_manager.left_arm_time[3][i] = data.l_hand

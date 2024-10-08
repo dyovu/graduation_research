@@ -17,31 +17,42 @@ class CompareManager:
         if cls._instance is None:
             cls._instance = super(CompareManager, cls).__new__(cls)
             # 遅延インポート
-            from backend.mcp_receiver.receiver import Receiver
-            cls._instance.receiver = Receiver()
+            
             cls._instance.data_queue = queue.Queue()
             cls._instance.current_index = 0
             # 
             # ここで部位ごとのインスタンス変数を初期化処理する
             # 
             # 右手
-            cls._instance.right_arm = {
-                "r_shoulder": np.zeros((7, cls._max_frame)),
-                "r_uparm": np.zeros((7,cls._max_frame)),
-                "r_lowarm": np.zeros((7,cls._max_frame)), 
-                "r_hand": np.zeros((7, cls._max_frame))
-            }
+            cls._instance.right_arm = [
+                np.zeros((7, cls._max_frame)),
+                np.zeros((7,cls._max_frame)),
+                np.zeros((7,cls._max_frame)), 
+                np.zeros((7, cls._max_frame))
+            ]
             # 左手
-            cls._instance.left_arm = {
-                "l_shoulder": np.zeros((7, cls._max_frame)),
-                "l_uparm": np.zeros((7,cls._max_frame)),
-                "l_lowarm": np.zeros((7,cls._max_frame)), 
-                "l_hand": np.zeros((7, cls._max_frame))
-            }
+            cls._instance.left_arm = [
+                np.zeros((7, cls._max_frame)),
+                np.zeros((7,cls._max_frame)),
+                np.zeros((7,cls._max_frame)), 
+                np.zeros((7, cls._max_frame))
+            ]
+            # 
+            # 時間順に、7つのデータのまとまりとしてcos類似度を計算する
+            # 
+            cls._instance.left_arm_time = [
+                np.zeros((cls._max_frame, 7)),
+                np.zeros((cls._max_frame, 7)),
+                np.zeros((cls._max_frame, 7)), 
+                np.zeros((cls._max_frame, 7))
+            ]
         return cls._instance
     
     # ここを変更する
     def start(self):
+        from backend.mcp_receiver.receiver import Receiver
+        if not hasattr(self, 'receiver'):
+            self.receiver = Receiver() 
         if not self.receiver.running:
             self.receiver.start_compare(self.data_queue, self)
         else:
@@ -52,6 +63,32 @@ class CompareManager:
             self.receiver.stop()
         else:
             raise ValueError("Receiver is not running")
+        
+        
+    def reset(self):
+        """CompareManagerの全てのデータをリセット"""
+        self.current_index = 0
+        self.right_arm = [
+            np.zeros((7, self._max_frame)),
+            np.zeros((7, self._max_frame)),
+            np.zeros((7, self._max_frame)),
+            np.zeros((7, self._max_frame))
+        ]
+        self.left_arm = [
+            np.zeros((7, self._max_frame)),
+            np.zeros((7, self._max_frame)),
+            np.zeros((7, self._max_frame)),
+            np.zeros((7, self._max_frame))
+        ]
+        self.left_arm_time = [
+            np.zeros((self._max_frame, 7)),
+            np.zeros((self._max_frame, 7)),
+            np.zeros((self._max_frame, 7)),
+            np.zeros((self._max_frame, 7))
+        ]
+        # キューを空にする
+        while not self.data_queue.empty():
+            self.data_queue.get_nowait()
     
 
 def get_compare_manager():

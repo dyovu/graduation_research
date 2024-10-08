@@ -32,23 +32,31 @@ def process_packet(message):
     data = deserialize(message, 0, len(message), False)[0]
     data["head"]["ftyp"] = data["head"]["ftyp"].decode()
     data["head"]["vrsn"] = ord(data["head"]["vrsn"])
-    data["sndf"]["ipad"] = struct.unpack("@BBBBBBBB", data["sndf"]["ipad"])
+
+    if len(data["sndf"]["ipad"]) == 8:  # 8バイトの場合
+        # 最初の4バイトをIPアドレスとしてデシリアライズ
+        ip_address = data["sndf"]["ipad"][:4]
+        data["sndf"]["ipad"] = '.'.join(map(str, struct.unpack("@BBBB", ip_address)))
+    else:
+        raise ValueError(f"Invalid IP address length: {len(data['sndf']['ipad'])} bytes")
+
     data["sndf"]["rcvp"] = struct.unpack("@H", data["sndf"]["rcvp"])[0]
     if "skdf" in data:
         for item in data["skdf"]["bons"]:
             item["bnid"] = struct.unpack("@H", item["bnid"])[0]
             item["pbid"] = struct.unpack("@H", item["pbid"])[0]
-            item["tran"] = struct.unpack("@fffffff", item["tran"])
+            item["tran"] = list(struct.unpack("@fffffff", item["tran"]))
     elif "fram" in data:
         data["fram"]["fnum"] = struct.unpack("@I", data["fram"]["fnum"])[0]
         data["fram"]["time"] = struct.unpack("@I", data["fram"]["time"])[0]
-        data["fram"]["uttm"] = int(struct.unpack("@d", data["fram"]["uttm"])[0])
+
+        uttm_unix_time = struct.unpack("@d", data["fram"]["uttm"])[0]
         # ここでuttmをUNIX時間からUTC時間の文字列に変換する
-        data["fram"]["uttm"] = datetime.datetime.fromtimestamp(data["fram"]["uttm"], datetime.timezone(datetime.timedelta(hours=9)))
-        # 文字列変換フォーマット、DBに入れるならdatetime型でいれるから文字列変換入らない
-        # data["fram"]["uttm"] = data["fram"]["uttm"].strftime('%Y-%m-%d %H:%M:%S')
-        # print(data["fram"]["uttm"])
+        data["fram"]["uttm"] = datetime.datetime.fromtimestamp(uttm_unix_time, tz=datetime.timezone.utc)
+        data["fram"]['tmcd'] = struct.unpack("@6B", data["fram"]['tmcd'])
+        # print(data["fram"]["uttm"].strftime("%Y-%m-%d %H:%M:%S"))
+
         for item in data["fram"]["btrs"]:
             item["bnid"] = struct.unpack("@H", item["bnid"])[0]
-            item["tran"] = struct.unpack("@fffffff", item["tran"])
+            item["tran"] = list(struct.unpack("@fffffff", item["tran"]))
     return data

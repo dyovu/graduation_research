@@ -8,7 +8,7 @@ import queue
 from backend.database import get_db
 from backend.mcp_receiver.receiver import Receiver
 from backend.manager.insertion_manager import InsertionManager, get_insertion_manager
-from backend.service import create_body_parts_data
+from backend.manager.compare_manager import CompareManager, get_compare_manager
 
 router = APIRouter(tags=["insertion"])
 
@@ -16,14 +16,13 @@ router = APIRouter(tags=["insertion"])
 # DBにデータを入れる際のエンドポイント専用とする
 # InsertionManagerのメソッドを用いてUDP通信の起動と停止をする
 # 
-
-
 # ここのエンドポイントはUDP通信の待受を開始する
 @router.get(
     "/start_receiv"
 )
 async def start_receive_data(
-    insertion_manager: InsertionManager = Depends(get_insertion_manager)
+    insertion_manager: InsertionManager = Depends(get_insertion_manager),
+    compare_manager: CompareManager = Depends(get_compare_manager)
 ):
     recv:Receiver = insertion_manager.receiver
     data_queue:queue.Queue = insertion_manager.data_queue
@@ -37,9 +36,7 @@ async def start_receive_data(
     while not data_queue.empty():
         data_queue.get_nowait()
 
-    insertion_manager.start()
-    # await asyncio.sleep(1)
-    # receiver_manager.stop()
+    insertion_manager.start(compare_manager)
     return {"message": "Started waiting for data"}
 
 
@@ -86,5 +83,6 @@ async def insert_data_to_db(
     # create_body_parts_data.insert_right_arm_turn(db, q)
 
     # 左手
-    create_body_parts_data.insert_left_arm_turn(db, q)
+    print("It does not work")
+    # create_body_parts_data.insert_left_arm_turn(db, q)
     return {"message": "Data inserted into the database"}

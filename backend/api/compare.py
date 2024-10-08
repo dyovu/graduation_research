@@ -22,7 +22,6 @@ router = APIRouter(tags=["compare"])
 # compare_managerのメソッドを用いてUDP通信の起動と停止をする
 # 
 
-# ここのエンドポイントはUDP通信の待受を開始する
 @router.get(
     "/start_compare"
 )
@@ -37,31 +36,10 @@ async def start_receive_data(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Receiver is already working",
         )
-    # キューを空にする
-    while not data_queue.empty():
-        data_queue.get_nowait()
 
-    compare_manager.current_index = 0
-    compare_manager.right_arm = {
-        "r_shoulder": np.zeros((7, compare_manager._max_frame)),
-        "r_uparm": np.zeros((7,compare_manager._max_frame)),
-        "r_lowarm": np.zeros((7,compare_manager._max_frame)), 
-        "r_hand": np.zeros((7, compare_manager._max_frame))
-    }
-    compare_manager.left_arm = {
-        "l_shoulder": np.zeros((7, compare_manager._max_frame)),
-        "l_uparm": np.zeros((7,compare_manager._max_frame)),
-        "l_lowarm": np.zeros((7,compare_manager._max_frame)), 
-        "l_hand": np.zeros((7, compare_manager._max_frame))
-    }
-    
-    # print(compare_manager.right_arm["r_shoulder"].shape[1])
-    print(compare_manager.right_arm["r_shoulder"][0])
-    print(compare_manager.current_index)
+    compare_manager.reset()
 
     compare_manager.start()
-    # await asyncio.sleep(1)
-    # recv.stop()
     return {"message": "Started waiting for data"}
 
 

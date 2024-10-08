@@ -6,7 +6,8 @@ import time
 
 from backend.mcp_receiver.process_packet import process_packet
 from backend.service.store_user_data import insert_real_time_data
-from backend.service.compare import compare_right_arm, compare_left_arm
+from backend.service.compare import compare
+from backend.service.check_cos import check_cos
 from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
 
 
@@ -24,26 +25,21 @@ class Receiver():
         self.socket = None
         self.process_packet = process_packet
 
-    # 2つの開始メソッドをinsert用とcompare用に変更する
-    def start_insert(self, queue):
-        print("start_insert")
+    # insert用データ取得開始ボタン
+    def start_insert(self, queue, compare_manager):
+        print("get_insert_data")
         self.queue = queue
+        self.compare_manager = compare_manager
         self.thread = threading.Thread(target=self.loop, args=(False,))
         self.running = True
         self.thread.start()
     
-    # ここのループを変える
+    # compare用データ取得開始ボタン
     def start_compare(self, queue, compare_manager):
-        print("start_compare")
+        print("get_compare_data")
         self.queue = queue
-        self.compare_manager = compare_manager
-
         self.db_data_manager:DbDataManager = get_db_data_manager()
-        if self.db_data_manager is None:
-            print("DbDataManager is None")
-        else:
-            print(f"db_data_manager: {self.db_data_manager}, right_arm_frame: {self.db_data_manager.right_arm_frame}")
-
+        self.compare_manager = compare_manager
         self.thread = threading.Thread(target=self.loop, args=(True,))
         self.running = True
         self.thread.start()
@@ -73,25 +69,24 @@ class Receiver():
                 message, client_addr = self.socket.recvfrom(2048)
                 data = self.process_packet(message)
                 # print(data)
+
                 # ---------------------------------
                 # 比較する際にのみ使用する関数はこのif分の中に記述する
                 # ---------------------------------
                 if use_insert_right_arm:
+                    # print("use_insert_right_arm is True")
                     insert_real_time_data(data, self.compare_manager)
-                    if self.compare_manager.current_index%5 == 0 and  (self.compare_manager.current_index > self.db_data_manager.right_arm_frame):
-                        start = time.time()
-                        asyncio.run(compare_right_arm(self.compare_manager, self.db_data_manager))
-                        print(time.time() - start)
-                    if self.compare_manager.current_index%5 == 0 and  (self.compare_manager.current_index > self.db_data_manager.left_arm_frame):
-                        asyncio.run(compare_left_arm(self.compare_manager, self.db_data_manager))
+                    compare(self.compare_manager, self.db_data_manager)
+                    print("current_index is ", self.compare_manager.current_index)
                     
-
-                    print(self.compare_manager.current_index)
-                    if self.compare_manager.current_index >= 4000:
+                    if self.compare_manager.current_index >= 5000:
                         with self.lock:
                             self.running = False
                         break
-
+                else:
+                    insert_real_time_data(data, self.compare_manager)
+                    check_cos()
+                    # print(data)
                 self.queue.put(data)
                 
             except socket.timeout:
