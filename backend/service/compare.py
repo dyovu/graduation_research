@@ -22,9 +22,10 @@ def compare(
         
     if compare_manager.current_index%5 == 0 and  (compare_manager.current_index > db_data_manager.left_arm_frame):
         # start = time.time()
+        # 
         # compare_left_arm(compare_manager, db_data_manager)
 
-        compare_left_arm_time(compare_manager, db_data_manager)
+        compare_left_arm_by_time(compare_manager, db_data_manager)
         # print("run time : " ,time.time() - start)
         pass
 
@@ -133,10 +134,13 @@ def compare_left_arm(
 
 
 
-def compare_left_arm_time(
+def compare_left_arm_by_time(
     compare_manager,
     db_data_manager
 ):
+    # 
+    # 時間順に、7つのデータのまとまりとしてcos類似度を計算する
+    # 
     global last_play_time
     left_arm_size = db_data_manager.left_arm_frame
     index = compare_manager.current_index
@@ -148,20 +152,20 @@ def compare_left_arm_time(
 
     for i in range(left_arm_size):
         cosine_similarity_l_shoulder = 1 - cosine(
-            compare_manager.left_arm_time[0][index-left_arm_size+i], 
-            db_data_manager.left_arm_time[0][i]
+            compare_manager.left_arm_time[0][index-left_arm_size+i][4:7], 
+            db_data_manager.left_arm_time[0][i][4:7]
         )
         cosine_similarity_l_uparm = 1- cosine(
-            compare_manager.left_arm_time[1][index-left_arm_size+i], 
-            db_data_manager.left_arm_time[1][i]
+            compare_manager.left_arm_time[1][index-left_arm_size+i][4:7], 
+            db_data_manager.left_arm_time[1][i][4:7]
         )
         cosine_similarity_l_lowarm = 1 - cosine(
-            compare_manager.left_arm_time[2][index-left_arm_size+i], 
-            db_data_manager.left_arm_time[2][i]
+            compare_manager.left_arm_time[2][index-left_arm_size+i][4:7], 
+            db_data_manager.left_arm_time[2][i][4:7]
         )
         cosine_similarity_l_hand = 1 - cosine(
-            compare_manager.left_arm_time[3][index-left_arm_size+i], 
-            db_data_manager.left_arm_time[3][i]
+            compare_manager.left_arm_time[3][index-left_arm_size+i][4:7], 
+            db_data_manager.left_arm_time[3][i][4:7]
         )
         tmp_sum = cosine_similarity_l_shoulder + cosine_similarity_l_uparm + cosine_similarity_l_lowarm + cosine_similarity_l_hand
         sum_left_arm += tmp_sum

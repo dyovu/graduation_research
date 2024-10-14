@@ -4,10 +4,12 @@ import asyncio
 import os
 import time
 
+from scipy.spatial.distance import cosine
+
 from backend.mcp_receiver.process_packet import process_packet
-from backend.service.store_user_data import insert_real_time_data
+from backend.service.insert_real_time_data import insert_real_time_data
 from backend.service.compare import compare
-from backend.service.check_cos import check_cos
+from backend.service.check_sim import check_sim
 from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
 
 
@@ -26,10 +28,10 @@ class Receiver():
         self.process_packet = process_packet
 
     # insert用データ取得開始ボタン
-    def start_insert(self, queue, compare_manager):
+    def start_insert(self, queue, insertion_manager):
         print("get_insert_data")
         self.queue = queue
-        self.compare_manager = compare_manager
+        self.insertion_manager = insertion_manager
         self.thread = threading.Thread(target=self.loop, args=(False,))
         self.running = True
         self.thread.start()
@@ -75,7 +77,7 @@ class Receiver():
                 # ---------------------------------
                 if use_insert_right_arm:
                     # print("use_insert_right_arm is True")
-                    insert_real_time_data(data, self.compare_manager)
+                    insert_real_time_data(data)
                     compare(self.compare_manager, self.db_data_manager)
                     print("current_index is ", self.compare_manager.current_index)
                     
@@ -84,8 +86,15 @@ class Receiver():
                             self.running = False
                         break
                 else:
-                    insert_real_time_data(data, self.compare_manager)
-                    check_cos()
+                    insert_real_time_data(data, self.insertion_manager)
+                    check_sim()
+
+                    # print(cosine([0.0022313123,0.006632771], [0.003257431,0.0041287671]))
+                    # print(cosine([2.2313123,6.632771], [3.257431,4.1287671]))
+                    # print(cosine([100, 100], [100, 99]))
+                    # print(cosine([1,0], [0, 1]))
+                    # print(cosine([1,0], [-1, 0]))
+                    # print(cosine([1,0,0], [-1, 0, 0]))
                     # print(data)
                 self.queue.put(data)
                 

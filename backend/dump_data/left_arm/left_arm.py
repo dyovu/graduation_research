@@ -17,14 +17,14 @@ with open('backend/dump_data/left_arm/top.json', 'r') as file:
 
 def convert_to_numpy(data_list):
     left_arm = [
-        np.zeros((7, len(data_list))),
-        np.zeros((7, len(data_list))),
-        np.zeros((7, len(data_list))),
-        np.zeros((7, len(data_list)))
+        np.zeros((1, 7)),
+        np.zeros((1, 7)),
+        np.zeros((1, 7)),
+        np.zeros((1, 7))
     ]
     
     for idx, item in enumerate(data_list):
-        left_arm[idx] = np.array(item['tran'])  
+        left_arm[idx] = np.array(item['tran']).reshape(1, 7)
 
     return left_arm
 

@@ -10,7 +10,7 @@ from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
 router = APIRouter(tags=["retrieve"])
 
 @router.get(
-    "/get_right_arm",
+    "/get_db_data",
     # response_model = list[body_parts_schemas.RightArmRead],
 )
 async def get_right_arm_data(

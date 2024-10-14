@@ -17,7 +17,6 @@ class CompareManager:
         if cls._instance is None:
             cls._instance = super(CompareManager, cls).__new__(cls)
             # 遅延インポート
-            
             cls._instance.data_queue = queue.Queue()
             cls._instance.current_index = 0
             # 
@@ -36,15 +35,6 @@ class CompareManager:
                 np.zeros((7,cls._max_frame)),
                 np.zeros((7,cls._max_frame)), 
                 np.zeros((7, cls._max_frame))
-            ]
-            # 
-            # 時間順に、7つのデータのまとまりとしてcos類似度を計算する
-            # 
-            cls._instance.left_arm_time = [
-                np.zeros((cls._max_frame, 7)),
-                np.zeros((cls._max_frame, 7)),
-                np.zeros((cls._max_frame, 7)), 
-                np.zeros((cls._max_frame, 7))
             ]
         return cls._instance
     

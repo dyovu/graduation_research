@@ -28,14 +28,14 @@ router = APIRouter(tags=["compare"])
 async def start_receive_data(
     compare_manager: CompareManager = Depends(get_compare_manager),
 ):
-    recv:Receiver = compare_manager.receiver
+    # recv:Receiver = compare_manager.receiver
     data_queue:queue.Queue = compare_manager.data_queue
 
-    if recv.running:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Receiver is already working",
-        )
+    # if recv.running:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail="Receiver is already working",
+    #     )
 
     compare_manager.reset()
 

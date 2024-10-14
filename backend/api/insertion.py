@@ -36,7 +36,7 @@ async def start_receive_data(
     while not data_queue.empty():
         data_queue.get_nowait()
 
-    insertion_manager.start(compare_manager)
+    insertion_manager.start()
     return {"message": "Started waiting for data"}
 
 
