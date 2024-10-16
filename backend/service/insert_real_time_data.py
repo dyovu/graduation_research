@@ -17,6 +17,9 @@ def insert_real_time_data(
         つまりn行-7列のデータになりそう
         データの種類はクォータニオンと座標値どちらも用いる
     '''
+    # こちらの形式で比較を進める
+    for i in range(4):
+        insertion_manager.left_arm_time[i][index_i] = motion_data[11+i]["tran"]
 
     # このデータ形式は今後使わなくなるかもしれない
     #
@@ -26,11 +29,6 @@ def insert_real_time_data(
         for j in range(4):
             compare_manager.left_arm[j][i][index_c] = motion_data[11+j]["tran"][i]
             compare_manager.right_arm[j][i][index_c] = motion_data[15+j]["tran"][i]
-
-    # こちらの形式で比較を進める
-    for i in range(4):
-        insertion_manager.left_arm_time[i][index_i] = motion_data[11+i]["tran"]
-
 
     compare_manager.current_index += 1
     insertion_manager.current_index += 1
