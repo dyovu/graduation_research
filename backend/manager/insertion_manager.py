@@ -1,4 +1,5 @@
 # receiver_manager.py
+from fastapi import HTTPException, status
 
 import queue
 import numpy as np
@@ -10,15 +11,15 @@ import numpy as np
 class InsertionManager:
     # クラス変数 : クラス内で普遍の変数。いくつインスタンスを作ってもこの値は変わらない。
     _instance = None
+    _max_frame = 10000
 
     # _instanceが存在するかどうか
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(InsertionManager, cls).__new__(cls)
-            # 遅延インポート
-            from backend.mcp_receiver.receiver import Receiver
-            cls._instance.receiver = Receiver()
             cls._instance.data_queue = queue.Queue()
+            from backend.mcp_receiver.receiver import Receiver
+            cls.receiver = Receiver()
             cls._instance.current_index = 0
             # 
             # 時間順に、7つのデータのまとまりとしてcos類似度とユークリッド距離を計算するためのデータを入れる配列
@@ -39,7 +40,7 @@ class InsertionManager:
 
     def start(self):
         if not self.receiver.running:
-            self.receiver.start_insert(self.data_queue, self)
+            self.receiver.start_insert(self.data_queue)
         else:
             raise ValueError("Receiver is already running")
 

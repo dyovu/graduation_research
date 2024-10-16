@@ -4,6 +4,8 @@ import time
 from scipy.spatial.distance import cosine
 import pygame
 
+from backend.manager.compare_manager import CompareManager, get_compare_manager
+
 is_playing_lock = threading.Lock()
 pygame.mixer.init()
 
@@ -11,9 +13,14 @@ sound_duration = 0.5
 last_play_time = 0
 
 def compare(
-    compare_manager,
-    db_data_manager
+    db_data_manager,
+    lock,
+    compare_manager:CompareManager = get_compare_manager()
 ):
+    print("current_index is ", compare_manager.current_index)
+    if compare_manager.current_index >= 9000:
+        print("current_index exceed max frame")
+        
     if compare_manager.current_index%5 == 0 and  (compare_manager.current_index > db_data_manager.right_arm_frame):
         # start = time.time()
         # compare_right_arm(compare_manager, db_data_manager)
@@ -28,6 +35,11 @@ def compare(
         compare_left_arm_by_time(compare_manager, db_data_manager)
         # print("run time : " ,time.time() - start)
         pass
+
+
+    '''
+        これまでx, y, zの相対位置も類似度の計算位含めていたけど、これからはクォータニオンの座標と角度を用いて類似度を出そう
+    '''
 
 
 

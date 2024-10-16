@@ -7,10 +7,12 @@ import time
 from scipy.spatial.distance import cosine
 
 from backend.mcp_receiver.process_packet import process_packet
+from backend.mcp_receiver.convert_tran_data import convert_tran_data
+from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
 from backend.service.insert_real_time_data import insert_real_time_data
 from backend.service.compare import compare
 from backend.service.check_sim import check_sim
-from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
+from backend.service.show_quaternion import show_quaternion
 
 
 class Receiver():
@@ -25,23 +27,20 @@ class Receiver():
         self.port = port
         self.running = False
         self.socket = None
-        self.process_packet = process_packet
 
     # insert用データ取得開始ボタン
-    def start_insert(self, queue, insertion_manager):
+    def start_insert(self, queue):
         print("get_insert_data")
         self.queue = queue
-        self.insertion_manager = insertion_manager
         self.thread = threading.Thread(target=self.loop, args=(False,))
         self.running = True
         self.thread.start()
     
     # compare用データ取得開始ボタン
-    def start_compare(self, queue, compare_manager):
+    def start_compare(self, queue):
         print("get_compare_data")
         self.queue = queue
         self.db_data_manager:DbDataManager = get_db_data_manager()
-        self.compare_manager = compare_manager
         self.thread = threading.Thread(target=self.loop, args=(True,))
         self.running = True
         self.thread.start()
@@ -66,37 +65,28 @@ class Receiver():
 
         while self.running:
             try:
-                print('----------------------------------')
+                print('===================')
                 #mocopiからバイナリーデータ送られてくるのを受け取る
                 message, client_addr = self.socket.recvfrom(2048)
-                data = self.process_packet(message)
-                # print(data)
-
-                # ---------------------------------
-                # 比較する際にのみ使用する関数はこのif分の中に記述する
-                # ---------------------------------
+                data = process_packet(message)
+                zero_based_position_data = convert_tran_data(data)
+                
+                
                 if use_insert_right_arm:
-                    # print("use_insert_right_arm is True")
-                    insert_real_time_data(data)
-                    compare(self.compare_manager, self.db_data_manager)
-                    print("current_index is ", self.compare_manager.current_index)
-                    
-                    if self.compare_manager.current_index >= 5000:
-                        with self.lock:
-                            self.running = False
-                        break
+                    # ---------------------------------
+                    # 比較する際にのみ使用する関数はこのif分の中に記述する
+                    # ---------------------------------
+                    insert_real_time_data(zero_based_position_data)
+                    compare(self.db_data_manager, self.lock)
                 else:
-                    insert_real_time_data(data, self.insertion_manager)
-                    check_sim()
+                    # ---------------------------------
+                    # insert_startでloopしている時だけ呼び出す
+                    # ---------------------------------
+                    insert_real_time_data(zero_based_position_data)
+                    # show_quaternion(data)
+                    # check_sim()
 
-                    # print(cosine([0.0022313123,0.006632771], [0.003257431,0.0041287671]))
-                    # print(cosine([2.2313123,6.632771], [3.257431,4.1287671]))
-                    # print(cosine([100, 100], [100, 99]))
-                    # print(cosine([1,0], [0, 1]))
-                    # print(cosine([1,0], [-1, 0]))
-                    # print(cosine([1,0,0], [-1, 0, 0]))
-                    # print(data)
-                self.queue.put(data)
+                self.queue.put(zero_based_position_data)
                 
             except socket.timeout:
                 continue

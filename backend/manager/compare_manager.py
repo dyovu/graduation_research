@@ -16,7 +16,8 @@ class CompareManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(CompareManager, cls).__new__(cls)
-            # 遅延インポート
+            from backend.mcp_receiver.receiver import Receiver
+            cls.receiver = Receiver() 
             cls._instance.data_queue = queue.Queue()
             cls._instance.current_index = 0
             # 
@@ -40,11 +41,8 @@ class CompareManager:
     
     # ここを変更する
     def start(self):
-        from backend.mcp_receiver.receiver import Receiver
-        if not hasattr(self, 'receiver'):
-            self.receiver = Receiver() 
         if not self.receiver.running:
-            self.receiver.start_compare(self.data_queue, self)
+            self.receiver.start_compare(self.data_queue)
         else:
             raise ValueError("Receiver is already running")
         

@@ -31,7 +31,7 @@ def deserialize(data, index, length, is_list = False):
 def process_packet(message):
     data = deserialize(message, 0, len(message), False)[0]
     data["head"]["ftyp"] = data["head"]["ftyp"].decode()
-    data["head"]["vrsn"] = ord(data["head"]["vrsn"])
+    # data["head"]["vrsn"] = ord(data["head"]["vrsn"])
 
     if len(data["sndf"]["ipad"]) == 8:  # 8バイトの場合
         # 最初の4バイトをIPアドレスとしてデシリアライズ
@@ -41,6 +41,7 @@ def process_packet(message):
         raise ValueError(f"Invalid IP address length: {len(data['sndf']['ipad'])} bytes")
 
     data["sndf"]["rcvp"] = struct.unpack("@H", data["sndf"]["rcvp"])[0]
+
     if "skdf" in data:
         for item in data["skdf"]["bons"]:
             item["bnid"] = struct.unpack("@H", item["bnid"])[0]
