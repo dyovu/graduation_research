@@ -62,31 +62,36 @@ class Receiver():
         self.socket.bind((self.addr, self.port))
         #データが送られてこない時にずっと待受をしているのを防ぐ
         self.socket.settimeout(1.0)
+        range_of_motion = {"x_min": [], "y_min": [], "z_min": [], "x_max": [], "y_max": [], "z_max": []}
 
         while self.running:
             try:
-                print('===================')
+                print('----------------------')
                 #mocopiからバイナリーデータ送られてくるのを受け取る
                 message, client_addr = self.socket.recvfrom(2048)
                 data = process_packet(message)
-                zero_based_position_data = convert_tran_data(data)
+                converted_data = convert_tran_data(data, range_of_motion)
+                # print("data", data)
+                print("converted_data", converted_data)
                 
                 
                 if use_insert_right_arm:
                     # ---------------------------------
                     # 比較する際にのみ使用する関数はこのif分の中に記述する
                     # ---------------------------------
-                    insert_real_time_data(zero_based_position_data)
+                    insert_real_time_data(data, converted_data)
                     compare(self.db_data_manager, self.lock)
+                    pass
                 else:
                     # ---------------------------------
                     # insert_startでloopしている時だけ呼び出す
                     # ---------------------------------
-                    insert_real_time_data(zero_based_position_data)
+                    insert_real_time_data(data, converted_data)
                     # show_quaternion(data)
                     # check_sim()
+                    pass
 
-                self.queue.put(zero_based_position_data)
+                self.queue.put(converted_data)
                 
             except socket.timeout:
                 continue
@@ -98,6 +103,8 @@ class Receiver():
                     print(e)
             except KeyError as e:
                 print(e)
+
+        print(range_of_motion)
 
         # whileと同じ位置
         if self.socket:

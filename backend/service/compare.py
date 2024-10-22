@@ -22,9 +22,9 @@ def compare(
         print("current_index exceed max frame")
         
     if compare_manager.current_index%5 == 0 and  (compare_manager.current_index > db_data_manager.right_arm_frame):
-        # start = time.time()
-        # compare_right_arm(compare_manager, db_data_manager)
-        # print(time.time() - start)
+        start = time.time()
+        compare_right_arm(compare_manager, db_data_manager)
+        print(time.time() - start)
         pass
         
     if compare_manager.current_index%5 == 0 and  (compare_manager.current_index > db_data_manager.left_arm_frame):
@@ -32,15 +32,9 @@ def compare(
         # 
         # compare_left_arm(compare_manager, db_data_manager)
 
-        compare_left_arm_by_time(compare_manager, db_data_manager)
+        # compare_left_arm_by_time(compare_manager, db_data_manager)
         # print("run time : " ,time.time() - start)
         pass
-
-
-    '''
-        これまでx, y, zの相対位置も類似度の計算位含めていたけど、これからはクォータニオンの座標と角度を用いて類似度を出そう
-    '''
-
 
 
 def compare_right_arm(
@@ -98,6 +92,8 @@ def compare_right_arm(
                 last_play_time = current_time
                 threading.Thread(target=play_guitar3).start()
                 # asyncio.create_task(play_sound(cached_song))
+
+
 
 
 def compare_left_arm(

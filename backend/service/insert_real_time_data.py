@@ -3,10 +3,10 @@ from backend.manager.insertion_manager import InsertionManager, get_insertion_ma
 
 def insert_real_time_data(
     data,
+    converted_data,
+    insertion_manager: InsertionManager = get_insertion_manager(),
     compare_manager:CompareManager = get_compare_manager(),
-    insertion_manager: InsertionManager = get_insertion_manager()
 ):  
-    motion_data = data["fram"]["btrs"]
     #　1回の呼び出しが終わったらindexを1増やす
     index_c = compare_manager.current_index
     index_i = insertion_manager.current_index
@@ -18,17 +18,21 @@ def insert_real_time_data(
         データの種類はクォータニオンと座標値どちらも用いる
     '''
     # こちらの形式で比較を進める
+    # converted dataはそもそもnp arrayなのにそれをnp arrayのtime_aligned_left_arm荷入れてる
     for i in range(4):
-        insertion_manager.left_arm_time[i][index_i] = motion_data[11+i]["tran"]
+        insertion_manager.time_aligned_left_arm[i][index_i] = converted_data[str(11+i)]
+        insertion_manager.time_aligned_right_arm[i][index_i] = converted_data[str(15+i)]
+        # print(insertion_manager.time_aligned_right_arm)
+        pass
+        
+    # print(insertion_manager.time_aligned_right_arm[3][index_i])
 
     # このデータ形式は今後使わなくなるかもしれない
-    #
     # 最終的な比較の際はcompare_managerを変更してn行-7列のデータが入るようにする
-    #
-    for i in range(7):
-        for j in range(4):
-            compare_manager.left_arm[j][i][index_c] = motion_data[11+j]["tran"][i]
-            compare_manager.right_arm[j][i][index_c] = motion_data[15+j]["tran"][i]
+    for i in range(4):
+        for j in range(7):
+            compare_manager.left_arm[i][j][index_c] = data['fram']["btrs"][11+i]["tran"][j]
+            compare_manager.right_arm[i][j][index_c] = data['fram']["btrs"][15+i]["tran"][j]
 
     compare_manager.current_index += 1
     insertion_manager.current_index += 1

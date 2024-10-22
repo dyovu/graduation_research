@@ -16,8 +16,6 @@ class CompareManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(CompareManager, cls).__new__(cls)
-            from backend.mcp_receiver.receiver import Receiver
-            cls.receiver = Receiver() 
             cls._instance.data_queue = queue.Queue()
             cls._instance.current_index = 0
             # 
@@ -41,6 +39,8 @@ class CompareManager:
     
     # ここを変更する
     def start(self):
+        from backend.mcp_receiver.receiver import Receiver
+        self.receiver = Receiver() 
         if not self.receiver.running:
             self.receiver.start_compare(self.data_queue)
         else:
@@ -68,12 +68,12 @@ class CompareManager:
             np.zeros((7, self._max_frame)),
             np.zeros((7, self._max_frame))
         ]
-        self.left_arm_time = [
-            np.zeros((self._max_frame, 7)),
-            np.zeros((self._max_frame, 7)),
-            np.zeros((self._max_frame, 7)),
-            np.zeros((self._max_frame, 7))
-        ]
+        # self.left_arm_time = [
+        #     np.zeros((self._max_frame, 7)),
+        #     np.zeros((self._max_frame, 7)),
+        #     np.zeros((self._max_frame, 7)),
+        #     np.zeros((self._max_frame, 7))
+        # ]
         # キューを空にする
         while not self.data_queue.empty():
             self.data_queue.get_nowait()

@@ -1,7 +1,7 @@
 import numpy as np
 import json
 
-with open('backend/dump_data/right_arm/botttom.json', 'r') as file:
+with open('backend/dump_data/right_arm/bottom.json', 'r') as file:
     bottom = json.load(file)
 
 with open('backend/dump_data/right_arm/front.json', 'r') as file:
@@ -23,8 +23,8 @@ def convert_to_numpy(data_list):
         np.zeros((7, len(data_list)))
     ]
     
-    for idx, item in enumerate(data_list):
-        right_arm[idx]= np.array(item['tran']) 
+    for idx, item in enumerate(data_list.values()):
+        right_arm[idx]= np.array(item) 
 
     return right_arm
 
