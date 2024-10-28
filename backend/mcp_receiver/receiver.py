@@ -57,41 +57,47 @@ class Receiver():
 
     # inset, compareそれぞれに対応するloopを作る
     def loop(self,use_insert_right_arm):
-        print('loop')
+        print("loop")
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.socket.bind((self.addr, self.port))
         #データが送られてこない時にずっと待受をしているのを防ぐ
         self.socket.settimeout(1.0)
         range_of_motion = {"x_min": [], "y_min": [], "z_min": [], "x_max": [], "y_max": [], "z_max": []}
+        previous = {}
 
         while self.running:
             try:
-                print('----------------------')
+                print("----------------------")
                 #mocopiからバイナリーデータ送られてくるのを受け取る
                 message, client_addr = self.socket.recvfrom(2048)
                 data = process_packet(message)
-                converted_data = convert_tran_data(data, range_of_motion)
+                converted_data = convert_tran_data(data, range_of_motion, previous)
                 # print("data", data)
-                print("converted_data", converted_data)
-                
+                # print("converted_data", converted_data)
                 
                 if use_insert_right_arm:
-                    # ---------------------------------
-                    # 比較する際にのみ使用する関数はこのif分の中に記述する
-                    # ---------------------------------
-                    insert_real_time_data(data, converted_data)
-                    compare(self.db_data_manager, self.lock)
+                    """
+                        比較する際にのみ使用する関数はこのif分の中に記述する
+                    """
+                    # insert_real_time_data(data, converted_data)
+                    # compare(self.db_data_manager, self.lock)
                     pass
                 else:
-                    # ---------------------------------
-                    # insert_startでloopしている時だけ呼び出す
-                    # ---------------------------------
-                    insert_real_time_data(data, converted_data)
+                    """
+                        insert_startでloopしている時だけ呼び出す
+                    """
+                    if not previous == {}:
+                        insert_real_time_data(data, previous)
                     # show_quaternion(data)
                     # check_sim()
                     pass
-
-                self.queue.put(converted_data)
+                
+                print(previous)
+                if not previous == {}:
+                    self.queue.put(previous)
+                # skdfでNoneが帰ってくる可能性がある
+                if converted_data != None:
+                    previous = converted_data
                 
             except socket.timeout:
                 continue

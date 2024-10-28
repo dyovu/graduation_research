@@ -12,11 +12,6 @@ def insert_real_time_data(
     index_i = insertion_manager.current_index
 
 
-    '''
-        とりあえずDPマッチングやユークリッド距離、cos類似度の比較をする際のデータは時系列のデータになりそう。   
-        つまりn行-7列のデータになりそう
-        データの種類はクォータニオンと座標値どちらも用いる
-    '''
     # こちらの形式で比較を進める
     # converted dataはそもそもnp arrayなのにそれをnp arrayのtime_aligned_left_arm荷入れてる
     for i in range(4):
