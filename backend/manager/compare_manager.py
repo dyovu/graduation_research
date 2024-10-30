@@ -1,5 +1,3 @@
-# receiver_manager.py
-
 import queue
 import numpy as np
 
@@ -10,7 +8,8 @@ import numpy as np
 class CompareManager:
     # クラス変数 : クラス内で普遍の変数。いくつインスタンスを作ってもこの値は変わらない。
     _instance = None
-    _max_frame = 10000
+    # fps60でやるつもりだから200秒 = 3分20秒まで一応
+    _max_frame = 12000
 
     # _instanceが存在するかどうか
     def __new__(cls):
@@ -18,24 +17,22 @@ class CompareManager:
             cls._instance = super(CompareManager, cls).__new__(cls)
             cls._instance.data_queue = queue.Queue()
             cls._instance.current_index = 0
-            # 
-            # ここで部位ごとのインスタンス変数を初期化処理する
-            # 
-            # 右手
-            cls._instance.right_arm = [
-                np.zeros((7, cls._max_frame)),
-                np.zeros((7,cls._max_frame)),
-                np.zeros((7,cls._max_frame)), 
-                np.zeros((7, cls._max_frame))
-            ]
-            # 左手
-            cls._instance.left_arm = [
-                np.zeros((7, cls._max_frame)),
-                np.zeros((7,cls._max_frame)),
-                np.zeros((7,cls._max_frame)), 
-                np.zeros((7, cls._max_frame))
-            ]
+            """
+                Compare用: insertionと同じく腰からの相対位置（x, y, z）と次のフレームまでのベクトル（x, y, z）をいれる
+                各動作ごとにnp配列作ってデータが入ってきた瞬間に分ける方針で
+            """
+            cls._instance.clap_over_head = cls._instance._initialize_movement_list(8)
+            cls._instance.down_two_times = cls._instance._initialize_movement_list(9)
+            cls._instance.front_back = cls._instance._initialize_movement_list(9)
+            cls._instance.jump = cls._instance._initialize_movement_list(6)
+            cls._instance.l_arm_and_leg_side = cls._instance._initialize_movement_list(8)
+            cls._instance.r_arm_and_leg_side = cls._instance._initialize_movement_list(8)
         return cls._instance
+    
+    @staticmethod
+    def _initialize_movement_list(size):
+        """ sizeで指定した個数の_max_frame行×6列のゼロ行列のリストを作成 """
+        return [np.zeros((CompareManager._max_frame, 6)) for _ in range(size)]
     
     # ここを変更する
     def start(self):
@@ -56,24 +53,14 @@ class CompareManager:
     def reset(self):
         """CompareManagerの全てのデータをリセット"""
         self.current_index = 0
-        self.right_arm = [
-            np.zeros((7, self._max_frame)),
-            np.zeros((7, self._max_frame)),
-            np.zeros((7, self._max_frame)),
-            np.zeros((7, self._max_frame))
-        ]
-        self.left_arm = [
-            np.zeros((7, self._max_frame)),
-            np.zeros((7, self._max_frame)),
-            np.zeros((7, self._max_frame)),
-            np.zeros((7, self._max_frame))
-        ]
-        # self.left_arm_time = [
-        #     np.zeros((self._max_frame, 7)),
-        #     np.zeros((self._max_frame, 7)),
-        #     np.zeros((self._max_frame, 7)),
-        #     np.zeros((self._max_frame, 7))
-        # ]
+
+        self.clap_over_head = self._initialize_movement_list(8)
+        self.down_two_times = self._initialize_movement_list(9)
+        self.front_back = self._initialize_movement_list(9)
+        self.jump = self._initialize_movement_list(6)
+        self.l_arm_and_leg_side = self._initialize_movement_list(8)
+        self.r_arm_and_leg_side = self._initialize_movement_list(8)
+
         # キューを空にする
         while not self.data_queue.empty():
             self.data_queue.get_nowait()

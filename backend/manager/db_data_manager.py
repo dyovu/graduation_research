@@ -10,33 +10,20 @@ class DbDataManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(DbDataManager, cls).__new__(cls)
-            # 
-            # ここで部位ごとのインスタンス変数を初期化処理する
-            # 
-            # 右手
-            cls._instance.right_arm_frame = cls._right_frame_size
-            cls._instance.right_arm = [
-                np.zeros((7, cls._right_frame_size)),
-                np.zeros((7, cls._right_frame_size)),
-                np.zeros((7, cls._right_frame_size)),
-                np.zeros((7, cls._right_frame_size))
+            """
+                Compare用: insertionと同じく腰からの相対位置（x, y, z）と次のフレームまでのベクトル（x, y, z）をいれる
+            """
+            cls._instance.time_aligned_right_arm = [
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)), 
+                np.zeros((cls._max_frame, 6))
             ]
-            # 左手
-            cls._instance.left_arm_frame = cls._left_frame_size
-            cls._instance.left_arm = [
-                np.zeros((7, cls._left_frame_size)),
-                np.zeros((7, cls._left_frame_size)),
-                np.zeros((7, cls._left_frame_size)),
-                np.zeros((7, cls._left_frame_size))
-            ]
-            # 
-            # 時間順に、7つのデータのまとまりとしてcos類似度を計算する
-            # 
-            cls._instance.left_arm_time = [
-                np.zeros((cls._left_frame_size, 7)),
-                np.zeros((cls._left_frame_size, 7)),
-                np.zeros((cls._left_frame_size, 7)), 
-                np.zeros((cls._left_frame_size, 7))
+            cls._instance.time_aligned_left_arm = [
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)), 
+                np.zeros((cls._max_frame, 6))
             ]
         return cls._instance
 

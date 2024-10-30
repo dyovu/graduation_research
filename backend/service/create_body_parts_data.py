@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+# from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 import queue
 from typing import Optional
@@ -10,7 +10,6 @@ import backend.models.body_parts as body_parts_models
 # -----------------
 # 右手
 # -----------------
-
 def insert_right_arm(db: Session, q: queue.Queue, max_rows: Optional[int] = None):
     db_objs = []
     count = 0
@@ -61,7 +60,6 @@ def _create_right_arm(
 # -----------------
 # 左手
 # -----------------
-
 def insert_left_arm_turn(db: Session, q: queue.Queue, max_rows: Optional[int] = None):
     db_objs = []
     count = 0

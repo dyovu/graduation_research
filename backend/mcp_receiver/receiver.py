@@ -4,15 +4,13 @@ import asyncio
 import os
 import time
 
-from scipy.spatial.distance import cosine
 
 from backend.mcp_receiver.process_packet import process_packet
 from backend.mcp_receiver.convert_tran_data import convert_tran_data
-from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
+from backend.manager.choreography_manager import ChoreographyManager, get_choreography_manager
 from backend.service.insert_real_time_data import insert_real_time_data
-from backend.service.compare import compare
-from backend.service.check_sim import check_sim
-from backend.service.show_quaternion import show_quaternion
+from backend.service.compare_old import compare
+# from backend.service.check_sim import check_sim
 
 
 class Receiver():
@@ -40,7 +38,7 @@ class Receiver():
     def start_compare(self, queue):
         print("get_compare_data")
         self.queue = queue
-        self.db_data_manager:DbDataManager = get_db_data_manager()
+        self.choreography_manager:ChoreographyManager = get_choreography_manager()
         self.thread = threading.Thread(target=self.loop, args=(True,))
         self.running = True
         self.thread.start()
@@ -79,17 +77,16 @@ class Receiver():
                     """
                         比較する際にのみ使用する関数はこのif分の中に記述する
                     """
-                    # insert_real_time_data(data, converted_data)
-                    # compare(self.db_data_manager, self.lock)
+                    insert_real_time_data(data, converted_data)
+                    compare(self.choreography_manager, self.lock)
                     pass
                 else:
                     """
                         insert_startでloopしている時だけ呼び出す
                     """
-                    if not previous == {}:
-                        insert_real_time_data(data, previous)
-                    # show_quaternion(data)
-                    # check_sim()
+                    # if not previous == {}:
+                        # insert_real_time_data(data, previous)
+                        # check_sim() 
                     pass
                 
                 print(previous)

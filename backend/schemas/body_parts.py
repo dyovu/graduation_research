@@ -16,7 +16,6 @@ class RightArmCreate(RightArmBase):
 class RightArmRead(RightArmBase):
     class Config:
         from_attributes = True 
-        from_attributes=True
     pass
 
 # 左手
@@ -33,5 +32,4 @@ class LeftArmCreate(LeftArmBase):
 class LeftArmRead(LeftArmBase):
     class Config:
         from_attributes = True 
-        from_attributes=True
     pass

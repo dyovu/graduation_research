@@ -1,6 +1,3 @@
-"""
-ここから変更した新しいコード
-"""
 import uvicorn
 import logging
 from fastapi import FastAPI
@@ -10,8 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 # ここにAPIのエンドポイントとなるファイルを追加していく
 # 
 from backend.api import (
-    insertion_router,
+    receiver_router,
     retrieve_router,
+    insert_router,
     compare_router,
 )
 from backend.config import config
@@ -23,7 +21,8 @@ if config.deploy_env != "production":
 # ここにAPIのエンドポイントとなるファイルを追加していく
 # 
 app = FastAPI()
-app.include_router(insertion_router)
+app.include_router(receiver_router)
+app.include_router(insert_router)
 app.include_router(retrieve_router)
 app.include_router(compare_router)
 

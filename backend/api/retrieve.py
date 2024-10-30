@@ -1,84 +1,94 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-import numpy as np
 
 from backend.database import get_db
-import backend.schemas.body_parts as body_parts_schemas
-import backend.models.body_parts as body_parts_models
-from backend.manager.db_data_manager import DbDataManager, get_db_data_manager
+import backend.schemas.choreography as choreography_schemas
+import backend.models.choreography as choreography_models
+from backend.manager.choreography_manager import ChoreographyManager, get_choreography_manager
 
 router = APIRouter(tags=["retrieve"])
 
 @router.get(
     "/get_db_data",
-    # response_model = list[body_parts_schemas.RightArmRead],
 )
 async def get_right_arm_data(
     db: Session = Depends(get_db),
-    db_data_manager: DbDataManager = Depends(get_db_data_manager),
+    choreography_manager: ChoreographyManager = Depends(get_choreography_manager),
 ):
-    skip = 0
-    limit_r = db_data_manager.right_arm_frame
-    limit_l = db_data_manager.left_arm_frame
+    clap_over_head = db.query(choreography_models.ClapOverHead).all()
+    down_two_times = db.query(choreography_models.DownTwoTimes).all()
+    front_back = db.query(choreography_models.FrontBack).all()
+    jump = db.query(choreography_models.Jump).all()
+    l_arm_and_leg_side = db.query(choreography_models.LeftArmAndLegSide).all()
+    r_arm_and_leg_side = db.query(choreography_models.RightArmAndLegSide).all()
 
-    # 右手
-    raw_data_right_arm = db.query(body_parts_models.RightArmTurn).offset(skip).limit(limit_r).all()
-    if not raw_data_right_arm:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
-        )
-    formatted_right_arm_data = [body_parts_schemas.RightArmRead.from_orm(record) for record in raw_data_right_arm]
-    # データを変換してDbDataManagerに適用
-    transform_right_arm_data(db_data_manager, formatted_right_arm_data)
+    formatted_formatted = [choreography_schemas.ClapOverHeadRead.from_orm(record) for record in clap_over_head]
+    formatted_down_two_times = [choreography_schemas.DownTwoTimesRead.from_orm(record) for record in down_two_times]
+    formatted_front_back = [choreography_schemas.FrontBackRead.from_orm(record) for record in front_back]
+    formatted_jump = [choreography_schemas.JumpRead.from_orm(record) for record in jump]
+    formatted_l_arm_and_leg_side = [choreography_schemas.LeftArmAndLegSideRead.from_orm(record) for record in l_arm_and_leg_side]
+    formatted_r_arm_and_leg_side = [choreography_schemas.RightArmAndLegSideRead.from_orm(record) for record in r_arm_and_leg_side]
 
+    insert_clap_over_head(choreography_manager, formatted_formatted)
+    insert_down_two_times(choreography_manager, formatted_down_two_times)
+    insert_front_back(choreography_manager, formatted_front_back)
+    insert_jump(choreography_manager, formatted_jump)
+    insert_l_arm_and_leg_side(choreography_manager, formatted_l_arm_and_leg_side)
+    insert_r_arm_and_leg_side(choreography_manager, formatted_r_arm_and_leg_side)  
+    return
 
-    # 左手
-    raw_data_left_arm = db.query(body_parts_models.LeftArmTurn).offset(skip).limit(limit_l).all()
-    if not raw_data_left_arm:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Item not found",
-        )
-    formatted_left_arm_data = [body_parts_schemas.LeftArmRead.from_orm(record) for record in raw_data_left_arm]
-    # データを変換してDbDataManagerに適用
-    transform_left_arm_data(db_data_manager, formatted_left_arm_data)
-
-    transform_left_arm_time_data(db_data_manager, formatted_left_arm_data)
-
-
-    print(db_data_manager.right_arm)
-    print("data size of r arm: ", db_data_manager.right_arm_frame)
-    print()
-    print(db_data_manager.left_arm)
-    print()
-    print(db_data_manager.left_arm_time)
-    print("data size of l arm: ", db_data_manager.left_arm_frame)
-    
-
-    return 
-
-
-def transform_right_arm_data(db_data_manager, data_list):
-    # r_shoulder, r_uparm, r_lowarm, r_handのデータをNumPy配列に変換してDbDataManagerにセット
-    db_data_manager.right_arm[0] = np.array([data.r_shoulder for data in data_list]).T
-    db_data_manager.right_arm[1] = np.array([data.r_uparm for data in data_list]).T
-    db_data_manager.right_arm[2] = np.array([data.r_lowarm for data in data_list]).T
-    db_data_manager.right_arm[3] = np.array([data.r_hand for data in data_list]).T
-
-def transform_left_arm_data(db_data_manager, data_list):
-    # r_shoulder, r_uparm, r_lowarm, r_handのデータをNumPy配列に変換してDbDataManagerにセット
-    db_data_manager.left_arm[0] = np.array([data.l_shoulder for data in data_list]).T
-    db_data_manager.left_arm[1] = np.array([data.l_uparm for data in data_list]).T
-    db_data_manager.left_arm[2] = np.array([data.l_lowarm for data in data_list]).T
-    db_data_manager.left_arm[3] = np.array([data.l_hand for data in data_list]).T
-
-
-# 時間ごとの配列の組みをそれぞれの部位に入れていく
-def transform_left_arm_time_data(db_data_manager, data_list):
+def insert_clap_over_head(coreography, data_list):
+    # print(len(data_list))
     for i, data in enumerate(data_list):
-        # 各部位のデータを行として追加
-        db_data_manager.left_arm_time[0][i] = data.l_shoulder
-        db_data_manager.left_arm_time[1][i] = data.l_uparm     
-        db_data_manager.left_arm_time[2][i] = data.l_lowarm     
-        db_data_manager.left_arm_time[3][i] = data.l_hand
+        column_index = 0
+        for column_name, value in data.__dict__.items():
+            if column_name == "id":
+                continue
+            coreography.clap_over_head[column_index][i] = value
+            column_index += 1
+
+def insert_down_two_times(coreography, data_list):
+    for i, data in enumerate(data_list):
+        column_index = 0
+        for column_name, value in data.__dict__.items():
+            if column_name == "id":
+                continue
+            coreography.down_two_times[column_index][i] = value
+            column_index += 1
+
+def insert_front_back(coreography, data_list):
+    for i, data in enumerate(data_list):
+        column_index = 0
+        for column_name, value in data.__dict__.items():
+            if column_name == "id":
+                continue
+            coreography.front_back[column_index][i] = value
+            column_index += 1
+
+def insert_jump(coreography, data_list):
+    for i, data in enumerate(data_list):
+        column_index = 0
+        for column_name, value in data.__dict__.items():
+            if column_name == "id":
+                continue
+            coreography.jump[column_index][i] = value
+            column_index += 1
+
+def insert_l_arm_and_leg_side(coreography, data_list):
+    for i, data in enumerate(data_list):
+        column_index = 0
+        for column_name, value in data.__dict__.items():
+            if column_name == "id":
+                continue
+            coreography.l_arm_and_leg_side[column_index][i] = value
+            column_index += 1
+
+def insert_r_arm_and_leg_side(coreography, data_list):
+    for i, data in enumerate(data_list):
+        column_index = 0
+        for column_name, value in data.__dict__.items():
+            if column_name == "id":
+                continue
+            coreography.r_arm_and_leg_side[column_index][i] = value
+            column_index += 1
+

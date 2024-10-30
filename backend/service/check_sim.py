@@ -1,11 +1,11 @@
 from scipy.spatial.distance import cosine, euclidean
 
 from backend.manager.insertion_manager import InsertionManager, get_insertion_manager
-from backend.dump_data.left_arm.left_arm import bottom_l, front_l, side_l, top_l
-from backend.dump_data.right_arm.right_arm import bottom_r, front_r, side_r, top_r
+# from backend.dump_data.left_arm.left_arm import bottom_l, front_l, side_l, top_l
+# from backend.dump_data.right_arm.right_arm import bottom_r, front_r, side_r, top_r
 
 
-right_arm_sample = [bottom_r, front_r, side_r, top_r]
+# right_arm_sample = [bottom_r, front_r, side_r, top_r]
 
 
 def check_sim(

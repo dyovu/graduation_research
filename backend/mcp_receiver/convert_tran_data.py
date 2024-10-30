@@ -16,7 +16,7 @@ def convert_tran_data(data, range_of_motion, previous):
         converted_data = apply_quaternion(tran)
         if previous != {}:
             calc_vector(converted_data, previous)
-        calc_body_range(converted_data, range_of_motion)
+        # calc_body_range(converted_data, range_of_motion)
 
     return converted_data
 
@@ -46,7 +46,6 @@ def add_parent_posotion_rotation(bone, return_data):
     qua = R.from_quat(qua)
     pos = np.array(bone["tran"][4:7])
 
-    # quaternionの合成の順序を変える必要あり
     if bnid == 11:
         world_rotation = qua * return_data["7"]["world_rotation"]
         world_rotation = normalize(world_rotation)
@@ -87,8 +86,8 @@ def calc_vector(conveted_data, previous):
     for index, value in conveted_data.items():
         a = previous[index]["world_position"]
         b = value["world_position"]
-        diff = b - a
-        previous[index]["vector"] = diff
+        vec = b - a
+        previous[index]["vector"] = vec
 
         """
             これはあとでcos類似度の計算に使う
@@ -97,8 +96,6 @@ def calc_vector(conveted_data, previous):
         # p_len = np.linalg.norm(a)
         # w_len = np.linalg.norm(b)
         # theta = np.arccos(x/(w_len*p_len))
-
-        
 
 
 # 取得した全ての関節の座標値からx, y, zの最大値と最小値を出力する関数

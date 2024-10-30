@@ -4,10 +4,6 @@ from fastapi import HTTPException, status
 import queue
 import numpy as np
 
-"""""
-このクラスはシングルトンパターン（クラスのインスタンスが1つだけ存在することを保証する）
-"""""
-
 class InsertionManager:
     # クラス変数 : クラス内で普遍の変数。いくつインスタンスを作ってもこの値は変わらない。
     _instance = None
@@ -20,20 +16,18 @@ class InsertionManager:
             cls._instance.data_queue = queue.Queue()
             cls._instance.quaternion_applied_data = queue.Queue()
             cls._instance.current_index = 0
-            # 
-            # 時間順に、7つのデータのまとまりとしてcos類似度とユークリッド距離を計算するためのデータを入れる配列
-            # 
+            # 本番の比較の時のみ必要だと思うけど一応残しとく
             cls._instance.time_aligned_right_arm = [
-                np.zeros((cls._max_frame, 3)),
-                np.zeros((cls._max_frame, 3)),
-                np.zeros((cls._max_frame, 3)), 
-                np.zeros((cls._max_frame, 3))
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)), 
+                np.zeros((cls._max_frame, 6))
             ]
             cls._instance.time_aligned_left_arm = [
-                np.zeros((cls._max_frame, 3)),
-                np.zeros((cls._max_frame, 3)),
-                np.zeros((cls._max_frame, 3)), 
-                np.zeros((cls._max_frame, 3))
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)),
+                np.zeros((cls._max_frame, 6)), 
+                np.zeros((cls._max_frame, 6))
             ]
         return cls._instance
 
