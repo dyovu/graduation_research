@@ -1,7 +1,7 @@
 import threading
 import time
 
-from scipy.spatial.distance import cosine
+from scipy.spatial.distance import cosine, euclidean
 import pygame
 
 from backend.manager.compare_manager import CompareManager, get_compare_manager

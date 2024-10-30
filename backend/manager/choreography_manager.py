@@ -28,6 +28,21 @@ class ChoreographyManager:
         """ sizeで指定した個数のrow行×6列のゼロ行列のリストを作成 """
         return [np.zeros((row, 6)) for _ in range(size)]
     
+    def return_size(cls, n):
+        match n:
+            case "c":
+                return cls._clap_over_head_size
+            case "d":
+                return cls._down_two_times_size
+            case "f":
+                return cls._front_back_size
+            case "j":
+                return cls._jump_size
+            case "l":
+                return cls._l_arm_and_leg_side_size
+            case "r":
+                return cls._r_arm_and_leg_side_size
+    
 
 def get_choreography_manager():
     choreography_manager = ChoreographyManager()
