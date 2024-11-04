@@ -42,6 +42,12 @@ class ChoreographyManager:
                 return cls._l_arm_and_leg_side_size
             case "r":
                 return cls._r_arm_and_leg_side_size
+            
+    def is_empty(self):
+        if self.clap_over_head[0][4] and self.clap_over_head[1][45] and self.clap_over_head[3][17]:
+            return False
+        else:
+            return True
     
 
 def get_choreography_manager():

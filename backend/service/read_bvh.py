@@ -11,7 +11,6 @@ def read_bvh(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
     
-    hierarchy_section = []
     motion_section = []
     is_motion = False
     
@@ -20,33 +19,39 @@ def read_bvh(file_path):
             is_motion = True
         elif is_motion:
             motion_section.append(line)
-        else:
-            hierarchy_section.append(line)
     
-    return hierarchy_section, motion_section
+    return motion_section
 
 
 # motionの各行を読み込んで判別
+"""
+    それぞれの動きのskdfを除いた最初のフレームを基準とし。そこを原点に動かすような変換をする。
+    positionに関しては単に-をつければいい、rotationに関してはquaternionのベクトル部を全て符号を入れ替えてノルムで割る。BVHの場合は一度eulerからas_quatする。
+"""
 def parse_motion(lines):
     # print("parse_motion")
     count = 0
     choreo_data = queue.Queue()
     transformed_motion_data = {}
     previous = {}
-    frame = None
+    base_pos_rot = {}
+    skip_next_line = False
+
     for line in lines:
         if line.startswith("Frames:"):
             frame = (int)(line.split()[1])
             print("frame", frame)
         elif line.startswith("Frame Time:"):
+            skip_next_line = True
             continue
-        else:
-            transformed_motion_data = calc_relative_position(line)
+        elif skip_next_line:
+            skip_next_line = False
+            continue
+        elif not skip_next_line:
+            transformed_motion_data = calc_relative_position(line, base_pos_rot)
             if not previous == {}:
                 calc_vector(transformed_motion_data, previous)
                 choreo_data.put(previous)
-                # if count ==10:
-                #     print(previous)
             previous = transformed_motion_data
             count += 1
             
@@ -54,27 +59,35 @@ def parse_motion(lines):
 
 
 # motionの各行を解析してpositionとquaterninoに変換、単位もmに変換、convet_tran_dataと同じ形に変換する
-def calc_relative_position(line):
+"""
+    この関数で初期位置と初期回転を受け取り位置補正、回転補正を行う。
+    補正するのはbnid: 0の部分のみ
+"""
+def calc_relative_position(line, base_pos_rot):
     transformed_motion_data = {}
     index = 0
     for i in range(27):
         tmp = {}
         local_pos = np.array([float(x) * 0.01 for x in line.split()[index: index+3]])
         local_eul = [float(x) for x in line.split()[index+3: index+6]]
-        rotation = R.from_euler('xyz', local_eul, degrees=True)
-        local_qua = R.from_quat(rotation.as_quat())
-        """
-            今はまだnparray型になってる、DBに入れるのにりつとに戻すならtolist()する
-        """
+        local_qua = R.from_euler('zxy', local_eul, degrees=True)
+
         if i == 0:
-            tmp["world_position"] = local_pos
-            tmp["world_rotation"] = local_qua
+            if base_pos_rot == {}:
+                base_pos_rot["base_pos"] = np.array([0,0,0])
+                base_pos_rot["base_rot_rev"] = local_qua.inv()
+                tmp["world_position"] = local_pos
+                tmp["world_rotation"] = local_qua
+            else:
+                corrected_pos = local_pos - base_pos_rot["base_pos"]
+                corrected_rot = base_pos_rot["base_rot_rev"]*local_qua
+                tmp["world_position"] = corrected_pos
+                tmp["world_rotation"] = corrected_rot
         else:
             tmp = add_parent_posotion_rotation(i, local_pos, local_qua, transformed_motion_data)
 
         transformed_motion_data[str(i)] = tmp
         index += 6
-    
     
     return transformed_motion_data
 
@@ -128,13 +141,4 @@ def calc_vector(conveted_data, previous):
         previous[index]["vector"] = vec
 
 
-# 使用例
-"""
-    file_path = 'clapOverHead.BVH'
-
-    hierarchy_lines, motion_lines = read_bvh(file_path)
-
-    # motion dataの部分を計算する
-    parse_motion(motion_lines)
-"""
 

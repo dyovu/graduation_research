@@ -43,7 +43,7 @@ def create_RightArmAndLegSide():
 
 
 def exec():
-    drop_all_coreography()
+    # drop_all_coreography()
     create_ClapOverHead()
     create_DownTwoTimes()
     create_FrontBack()

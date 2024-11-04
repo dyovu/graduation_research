@@ -9,7 +9,6 @@ def insert_real_time_data(
     insertion_manager: InsertionManager = get_insertion_manager(),
     compare_manager:CompareManager = get_compare_manager(),
 ):  
-    _receiver(insertion_manager, converted_data)
     _compare(compare_manager, converted_data)
 
 
@@ -23,14 +22,16 @@ def insert_real_time_data(
 #
 def _compare(compare_manager, data):
     index = compare_manager.current_index
+    print(index)
 
     for i, value in data.items():
-        if int(i) <= 5:
+        i = int(i)
+        if i <= 5:
             compare_manager.jump[i][index][0:3] = value["world_position"]
             compare_manager.jump[i][index][3:6] = value["vector"]
-        elif int(i) <= 10:
+        elif i <= 10:
             continue
-        elif int(i) <= 14:
+        elif i <= 14:
             # iは11から始まる
             # clap_over_head
             compare_manager.clap_over_head[i-11][index][0:3] = value["world_position"]
@@ -39,7 +40,7 @@ def _compare(compare_manager, data):
             # l_arm_and_leg_side
             compare_manager.l_arm_and_leg_side[i-11][index][0:3] = value["world_position"]
             compare_manager.l_arm_and_leg_side[i-11][index][3:6] = value["vector"]
-        elif int(i) <= 18:
+        elif i <= 18:
             # iは15から始まる
             # clap_over_head
             compare_manager.clap_over_head[i-11][index][0:3] = value["world_position"]
@@ -48,7 +49,7 @@ def _compare(compare_manager, data):
             # r_arm_and_leg_side
             compare_manager.r_arm_and_leg_side[i-15][index][0:3] = value["world_position"]
             compare_manager.r_arm_and_leg_side[i-15][index][3:6] = value["vector"]
-        elif int(i) <= 22:
+        elif i <= 22:
             # iは19から始まる
             # down_two_times
             compare_manager.down_two_times[i-19][index][0:3] = value["world_position"]
@@ -76,8 +77,6 @@ def _compare(compare_manager, data):
             compare_manager.r_arm_and_leg_side[i-19][index][3:6] = value["vector"]
 
     compare_manager.current_index += 1
-
-
 
 
 

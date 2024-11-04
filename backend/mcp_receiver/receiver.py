@@ -9,7 +9,7 @@ from backend.mcp_receiver.process_packet import process_packet
 from backend.mcp_receiver.convert_tran_data import convert_tran_data
 from backend.manager.choreography_manager import ChoreographyManager, get_choreography_manager
 from backend.service.insert_real_time_data import insert_real_time_data
-from backend.service.compare_old import compare
+from backend.service.compare import compare
 # from backend.service.check_sim import check_sim
 
 
@@ -77,8 +77,9 @@ class Receiver():
                     """
                         比較する際にのみ使用する関数はこのif分の中に記述する
                     """
-                    insert_real_time_data(data, converted_data)
-                    compare(self.choreography_manager, self.lock)
+                    if not previous == {}:
+                        insert_real_time_data(data, previous)
+                        compare(self.choreography_manager, self.lock)
                     pass
                 else:
                     """
@@ -87,11 +88,11 @@ class Receiver():
                     # if not previous == {}:
                         # insert_real_time_data(data, previous)
                         # check_sim() 
+                        # self.queue.put(previous)
                     pass
                 
-                print(previous)
-                if not previous == {}:
-                    self.queue.put(previous)
+                # print(previous)
+
                 # skdfでNoneが帰ってくる可能性がある
                 if converted_data != None:
                     previous = converted_data
