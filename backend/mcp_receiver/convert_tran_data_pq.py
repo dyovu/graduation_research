@@ -3,10 +3,11 @@ import numpy as np
 
 
 """
-    このコードはdeserializeされたframeを受け取りすべての関節をHip(bnid: 0)からの相対位置に変換する
-    quaternionを用いた計算方法やスケルトンの構造等はnotionへをみる
+    -----------------------------
+    このコードは親の回転 × 子の回転の順序で掛け合わせるバージョン
+    -----------------------------
 """
-def convert_tran_data(data, range_of_motion, previous):
+def convert_tran_data_pq(data, range_of_motion, previous):
     converted_data = None
     if "skdf" in data:
         # print("skdf")
@@ -47,23 +48,23 @@ def add_parent_posotion_rotation(bone, return_data):
     pos = np.array(bone["tran"][4:7])
 
     if bnid == 11:
-        world_rotation = qua * return_data["7"]["world_rotation"]
+        world_rotation = return_data["7"]["world_rotation"]*qua
         world_rotation = normalize(world_rotation)
         world_position = return_data["7"]["world_position"] + return_data[str(bnid-1)]["world_rotation"].apply(pos)
     elif bnid == 15:
-        world_rotation = qua * return_data["7"]["world_rotation"]
+        world_rotation = return_data["7"]["world_rotation"]*qua
         world_rotation = normalize(world_rotation)
         world_position = return_data["7"]["world_position"] + return_data[str(bnid-1)]["world_rotation"].apply(pos)
     elif bnid == 19:
-        world_rotation = qua * return_data["0"]["world_rotation"]
+        world_rotation = return_data["0"]["world_rotation"]*qua
         world_rotation = normalize(world_rotation)
         world_position = return_data["0"]["world_position"] + return_data[str(bnid-1)]["world_rotation"].apply(pos)
     elif bnid == 23:
-        world_rotation = qua * return_data["0"]["world_rotation"]
+        world_rotation = return_data["0"]["world_rotation"]*qua
         world_rotation = normalize(world_rotation)
         world_position = return_data["0"]["world_position"] + return_data[str(bnid-1)]["world_rotation"].apply(pos)
     else:
-        world_rotation = qua * return_data[str(bnid-1)]["world_rotation"]
+        world_rotation = return_data[str(bnid-1)]["world_rotation"]*qua
         world_rotation = normalize(world_rotation)
         world_position = return_data[str(bnid-1)]["world_position"] + return_data[str(bnid-1)]["world_rotation"].apply(pos)
 

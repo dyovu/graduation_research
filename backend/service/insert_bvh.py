@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 import backend.schemas.choreography as choreography_schemas
-import backend.models.choreography as choreography_models
+# import backend.models.choreography as choreography_models
+# import backend.models.choreography_nc as choreography_models
+# import backend.models.choreography_pq as choreography_models
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,7 +33,6 @@ def insert_bvh(db: Session, q: queue.Queue, file_name):
             insert_l_arm_and_leg_side(db, q, file_name)
         case "RArmAndLegSide":
             insert_r_arm_and_leg_side(db, q, file_name)
-    
     
 
 #
@@ -243,11 +244,11 @@ def _create_r_arm_and_leg_side(q: queue.Queue):
 
 def check_name_match(file_name, model_name):
     name = re.sub(r'(?<!^)(?=[A-Z])', '_', file_name).lower()
-    if name != model_name:
-        error_message = "テーブル名とBVHのファイル名が一致しません"
-        logger.error(f"{error_message}: expected {model_name}, got {name}")
+    # if name != model_name:
+    #     error_message = "テーブル名とBVHのファイル名が一致しません"
+    #     logger.error(f"{error_message}: expected {model_name}, got {name}")
         
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=error_message,
-        )
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail=error_message,
+    #     )

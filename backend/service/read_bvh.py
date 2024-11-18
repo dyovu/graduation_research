@@ -74,17 +74,29 @@ def calc_relative_position(line, base_pos_rot):
 
         if i == 0:
             if base_pos_rot == {}:
-                base_pos_rot["base_pos"] = np.array([0,0,0])
+                """
+                    位置と回転を補正しない場合は下の2行をコメントアウトする
+                """
+                base_pos_rot["base_pos"] = local_pos
                 base_pos_rot["base_rot_rev"] = local_qua.inv()
-                tmp["world_position"] = local_pos
-                tmp["world_rotation"] = local_qua
+                tmp["world_position"] = np.array([0,0.93,0])
+                tmp["world_rotation"] = R.from_quat([0, 0, 0, 1])
+
+                # tmp["world_position"] = local_pos
+                # tmp["world_rotation"] = local_qua
+                
+                # print("基準の位置です")
+                # print()
             else:
                 corrected_pos = local_pos - base_pos_rot["base_pos"]
                 corrected_rot = base_pos_rot["base_rot_rev"]*local_qua
                 tmp["world_position"] = corrected_pos
                 tmp["world_rotation"] = corrected_rot
+                # print("補正しました")
         else:
-            tmp = add_parent_posotion_rotation(i, local_pos, local_qua, transformed_motion_data)
+            print("どちらかを選択して")
+            # tmp = add_parent_posotion_rotation(i, local_pos, local_qua, transformed_motion_data)
+            # tmp = add_parent_posotion_rotation_rot_inv(i, local_pos, local_qua, transformed_motion_data)
 
         transformed_motion_data[str(i)] = tmp
         index += 6
@@ -142,3 +154,35 @@ def calc_vector(conveted_data, previous):
 
 
 
+
+def add_parent_posotion_rotation_rot_inv(bnid, local_pos, local_qua, parents_data):
+    return_data = {}
+    bnid = bnid
+    pos = local_pos
+    qua = local_qua
+
+    if bnid == 11:
+        world_rotation = parents_data["7"]["world_rotation"]*qua
+        world_rotation = normalize(world_rotation)
+        world_position = parents_data["7"]["world_position"] + parents_data[str(bnid-1)]["world_rotation"].apply(pos)
+    elif bnid == 15:
+        world_rotation = parents_data["7"]["world_rotation"]*qua
+        world_rotation = normalize(world_rotation)
+        world_position = parents_data["7"]["world_position"] + parents_data[str(bnid-1)]["world_rotation"].apply(pos)
+    elif bnid == 19:
+        world_rotation = parents_data["0"]["world_rotation"]*qua
+        world_rotation = normalize(world_rotation)
+        world_position = parents_data["0"]["world_position"] + parents_data[str(bnid-1)]["world_rotation"].apply(pos)
+    elif bnid == 23:
+        world_rotation = parents_data["0"]["world_rotation"]*qua
+        world_rotation = normalize(world_rotation)
+        world_position = parents_data["0"]["world_position"] + parents_data[str(bnid-1)]["world_rotation"].apply(pos)
+    else:
+        world_rotation = parents_data[str(bnid-1)]["world_rotation"]*qua
+        world_rotation = normalize(world_rotation)
+        world_position = parents_data[str(bnid-1)]["world_position"] + parents_data[str(bnid-1)]["world_rotation"].apply(pos)
+
+    return_data["world_rotation"] = world_rotation
+    return_data["world_position"] = world_position
+    
+    return return_data

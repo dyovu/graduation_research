@@ -3,12 +3,12 @@ import numpy as np
 # これもシングルトンパターン
 class ChoreographyManager:
     _instance = None
-    _clap_over_head_size = 75
-    _down_two_times_size = 186
-    _front_back_size = 167
-    _jump_size = 82
-    _l_arm_and_leg_side_size = 125
-    _r_arm_and_leg_side_size = 100
+    _clap_over_head_size = 74
+    _down_two_times_size = 185
+    _front_back_size = 166
+    _jump_size = 81
+    _l_arm_and_leg_side_size = 124
+    _r_arm_and_leg_side_size = 99
 
 
     def __new__(cls):
@@ -52,5 +52,4 @@ class ChoreographyManager:
 
 def get_choreography_manager():
     choreography_manager = ChoreographyManager()
-    print(f"Choreography instance: {choreography_manager}")
     return choreography_manager

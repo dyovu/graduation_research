@@ -9,6 +9,7 @@ from backend.database import get_db
 from backend.service.read_bvh import read_bvh, parse_motion
 from backend.service.insert_bvh import insert_bvh
 
+
 router = APIRouter(tags=["insert"])
 
 
@@ -26,22 +27,22 @@ file_names = ["clapOverHead", "downTwoTimes", "frontBack", "jump", "LArmAndLegSi
 async def insert_data_to_db(
     db: Session = Depends(get_db),
 ):
-    # print("データをれたい場合はコメントアウトを解除してください")
-    start = time.time()
-    print()
-    for file_name in file_names:
-        motion_lines = read_bvh(main_path + file_name + ".BVH")
-        # motion dataの部分を計算する
-        choreo_data = parse_motion(motion_lines)
-        print("choreo_data.qsize()", choreo_data.qsize())
+    print("データをれたい場合はコメントアウトを解除してください")
+    # start = time.time()
+    # print()
+    # for file_name in file_names:
+    #     motion_lines = read_bvh(main_path + file_name + ".BVH")
+    #     # motion dataの部分を計算する
+    #     choreo_data = parse_motion(motion_lines)
+    #     print("choreo_data.qsize()", choreo_data.qsize())
         
-        if choreo_data.empty():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="q is empty",
-            )
-        # insert_bvh(db, choreo_data, file_name)
-    print(time.time() - start)
+    #     if choreo_data.empty():
+    #         raise HTTPException(
+    #             status_code=status.HTTP_400_BAD_REQUEST,
+    #             detail="q is empty",
+    #         )
+    #     insert_bvh(db, choreo_data, file_name)
+    # print(time.time() - start)
 
     """
         特定のファイルだけDBに入れたい時

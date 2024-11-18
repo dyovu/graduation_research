@@ -7,8 +7,10 @@ import time
 
 from backend.mcp_receiver.process_packet import process_packet
 from backend.mcp_receiver.convert_tran_data import convert_tran_data
+from backend.mcp_receiver.convert_tran_data_pq import convert_tran_data_pq
 from backend.manager.choreography_manager import ChoreographyManager, get_choreography_manager
 from backend.service.insert_real_time_data import insert_real_time_data
+from backend.service.insert_correct_manager import insert_correct_manager
 from backend.service.compare import compare
 # from backend.service.check_sim import check_sim
 
@@ -20,7 +22,6 @@ class Receiver():
     roopback = "127.0.0.1"
     roopback2 = "0.0.0.0"
     def __init__(self, addr = roopback2, port = 12351):
-        self.lock = threading.Lock()
         self.addr = addr
         self.port = port
         self.running = False
@@ -65,11 +66,15 @@ class Receiver():
 
         while self.running:
             try:
-                print("----------------------")
+                # print("----------------------")
                 #mocopiからバイナリーデータ送られてくるのを受け取る
                 message, client_addr = self.socket.recvfrom(2048)
                 data = process_packet(message)
+
                 converted_data = convert_tran_data(data, range_of_motion, previous)
+                # converted_data = convert_tran_data_pq(data, range_of_motion, previous)
+                # insert_correct_manager(data)
+
                 # print("data", data)
                 # print("converted_data", converted_data)
                 
@@ -77,9 +82,10 @@ class Receiver():
                     """
                         比較する際にのみ使用する関数はこのif分の中に記述する
                     """
-                    if not previous == {}:
-                        insert_real_time_data(data, previous)
-                        compare(self.choreography_manager, self.lock)
+                    if not previous == {} and converted_data != None:
+                        insert_real_time_data(previous)
+                        compare(self.choreography_manager)
+                        pass
                     pass
                 else:
                     """
@@ -108,7 +114,7 @@ class Receiver():
             except KeyError as e:
                 print(e)
 
-        print(range_of_motion)
+        # print(range_of_motion)
 
         # whileと同じ位置
         if self.socket:
