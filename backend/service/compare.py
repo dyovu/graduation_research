@@ -32,12 +32,6 @@ def compare(
         clap_over_head(compare_manager, choreography_manager, current_index)
         # print("run time clap_over_head : " ,time.time() - start)
         pass
-        
-    if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("d")):
-        # start = time.time()
-        # down_two_times(compare_manager, choreography_manager, current_index)
-        # print("run time down_two_times : " ,time.time() - start)
-        pass
     
     if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("f")):
         # start = time.time()
@@ -47,7 +41,7 @@ def compare(
 
     if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("j")):
         # start = time.time()
-        # jump(compare_manager, choreography_manager, current_index)
+        jump(compare_manager, choreography_manager, current_index)
         # print("run time jump : " ,time.time() - start)
         pass
         
@@ -61,6 +55,12 @@ def compare(
         # start = time.time()
         r_arm_and_leg_side(compare_manager, choreography_manager, current_index)
         # print("run time r_arm_and_leg_side : " ,time.time() - start)
+        pass
+
+    if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("d")):
+        # start = time.time()
+        # down_two_times(compare_manager, choreography_manager, current_index)
+        # print("run time down_two_times : " ,time.time() - start)
         pass
     # print("run time all : " ,time.time() - start)
 

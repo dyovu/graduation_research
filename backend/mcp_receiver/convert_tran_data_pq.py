@@ -7,7 +7,7 @@ import numpy as np
     このコードは親の回転 × 子の回転の順序で掛け合わせるバージョン
     -----------------------------
 """
-def convert_tran_data_pq(data, range_of_motion, previous):
+def convert_tran_data_pq(data, previous):
     converted_data = None
     if "skdf" in data:
         # print("skdf")

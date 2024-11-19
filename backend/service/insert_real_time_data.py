@@ -1,11 +1,9 @@
 import numpy as np
 
 from backend.manager.compare_manager import CompareManager, get_compare_manager
-from backend.manager.insertion_manager import InsertionManager, get_insertion_manager
 
 def insert_real_time_data(
     converted_data,
-    insertion_manager: InsertionManager = get_insertion_manager(),
     compare_manager:CompareManager = get_compare_manager(),
 ):  
     _compare(compare_manager, converted_data)
@@ -88,17 +86,7 @@ def _compare(compare_manager, data):
 
 
 
-"""
-    データ形式は腰からの相対位置（x, y, z）と次のフレームまでのベクトル（x, y, z）
-"""
-# def _receiver(insertion_manager, data):
-#     index = insertion_manager.current_index
-#     for i in range(4):
-#         insertion_manager.time_aligned_left_arm[i][index] = np.concatenate((data[str(11+i)]["world_position"] + data[str(11+i)]["vector"]))
-#         insertion_manager.time_aligned_right_arm[i][index] = np.concatenate((data[str(15+i)]["world_position"] + data[str(15+i)]["vector"]))
-#         # print(insertion_manager.time_aligned_right_arm)
-#         pass
-#     insertion_manager.current_index += 1
+
 
 
 

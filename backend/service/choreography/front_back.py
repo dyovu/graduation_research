@@ -18,8 +18,9 @@ def front_back(compare_manager, choreography_manager, index):
 
     dp_sum = 0
     for i in range(9):
+        reference_pos = compare_manager.front_back[i][index-size][0:3]
         for j in range(size):
-            euclid = euclidean(compare_manager.front_back[i][index-size+j][0:3], choreography_manager.front_back[i][j][0:3])
+            euclid = euclidean(compare_manager.front_back[i][index-size+j][0:3] - reference_pos, choreography_manager.front_back[i][j][0:3])
             cos_sim = cosine(compare_manager.front_back[i][index-size+j][3:6], choreography_manager.front_back[i][j][3:6])
             dp_value = euclid*cos_sim
             dp_sum += dp_value

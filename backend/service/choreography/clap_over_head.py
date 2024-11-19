@@ -17,8 +17,9 @@ def clap_over_head(compare_manager, choreography_manager, index):
 
     dp_sum = 0
     for i in range(8):
+        reference_pos = compare_manager.clap_over_head[i][index-size][0:3]
         for j in range(size):
-            euclid = euclidean(compare_manager.clap_over_head[i][index-size+j][0:3], choreography_manager.clap_over_head[i][j][0:3])
+            euclid = euclidean(compare_manager.clap_over_head[i][index-size+j][0:3] - reference_pos, choreography_manager.clap_over_head[i][j][0:3])
             cos_sim = cosine(compare_manager.clap_over_head[i][index-size+j][3:6], choreography_manager.clap_over_head[i][j][3:6])
             dp_value = euclid*cos_sim
             dp_sum += dp_value
@@ -43,3 +44,6 @@ def drum2_tom2():
     if channel:
         channel.play(sound)
     print("音楽再生終了")
+
+
+    

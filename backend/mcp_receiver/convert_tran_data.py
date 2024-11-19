@@ -6,7 +6,7 @@ import numpy as np
     このコードはdeserializeされたframeを受け取りすべての関節をHip(bnid: 0)からの相対位置に変換する
     quaternionを用いた計算方法やスケルトンの構造等はnotionへをみる
 """
-def convert_tran_data(data, range_of_motion, previous):
+def convert_tran_data(data, previous):
     converted_data = None
     if "skdf" in data:
         # print("skdf")

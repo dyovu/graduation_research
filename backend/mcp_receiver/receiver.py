@@ -54,26 +54,21 @@ class Receiver():
         #ここでqueueからデータを取り出してデータベースに挿入するプログラムを書く（現在はweb上に表示する)
     
 
-    # inset, compareそれぞれに対応するloopを作る
     def loop(self,use_insert_right_arm):
         print("loop")
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.socket.bind((self.addr, self.port))
-        #データが送られてこない時にずっと待受をしているのを防ぐ
         self.socket.settimeout(1.0)
-        range_of_motion = {"x_min": [], "y_min": [], "z_min": [], "x_max": [], "y_max": [], "z_max": []}
+        # range_of_motion = {"x_min": [], "y_min": [], "z_min": [], "x_max": [], "y_max": [], "z_max": []}
         previous = {}
 
         while self.running:
             try:
-                # print("----------------------")
-                #mocopiからバイナリーデータ送られてくるのを受け取る
                 message, client_addr = self.socket.recvfrom(2048)
                 data = process_packet(message)
 
-                converted_data = convert_tran_data(data, range_of_motion, previous)
-                # converted_data = convert_tran_data_pq(data, range_of_motion, previous)
-                # insert_correct_manager(data)
+                converted_data = convert_tran_data(data, previous)
+                # converted_data = convert_tran_data_pq(data, previous)
 
                 # print("data", data)
                 # print("converted_data", converted_data)
@@ -85,19 +80,7 @@ class Receiver():
                     if not previous == {} and converted_data != None:
                         insert_real_time_data(previous)
                         compare(self.choreography_manager)
-                        pass
-                    pass
-                else:
-                    """
-                        insert_startでloopしている時だけ呼び出す
-                    """
-                    # if not previous == {}:
-                        # insert_real_time_data(data, previous)
-                        # check_sim() 
-                        # self.queue.put(previous)
-                    pass
                 
-                # print(previous)
 
                 # skdfでNoneが帰ってくる可能性がある
                 if converted_data != None:
