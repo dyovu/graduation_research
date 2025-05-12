@@ -27,6 +27,7 @@ class CompareManager:
             cls._instance.jump = cls._instance._initialize_movement_list(6)
             cls._instance.l_arm_and_leg_side = cls._instance._initialize_movement_list(8)
             cls._instance.r_arm_and_leg_side = cls._instance._initialize_movement_list(8)
+            cls._instance.side_walk = cls._instance._initialize_movement_list(9)
         return cls._instance
     
     @staticmethod
@@ -34,7 +35,6 @@ class CompareManager:
         """ sizeで指定した個数の_max_frame行×6列のゼロ行列のリストを作成 """
         return [np.zeros((CompareManager._max_frame, 6)) for _ in range(size)]
     
-    # ここを変更する
     def start(self):
         from backend.mcp_receiver.receiver import Receiver
         self.receiver = Receiver() 
@@ -60,6 +60,7 @@ class CompareManager:
         self.jump = self._initialize_movement_list(6)
         self.l_arm_and_leg_side = self._initialize_movement_list(8)
         self.r_arm_and_leg_side = self._initialize_movement_list(8)
+        self.side_walk = self._initialize_movement_list(9)
 
         # キューを空にする
         while not self.data_queue.empty():

@@ -14,7 +14,7 @@ def r_arm_and_leg_side(compare_manager, choreography_manager, index):
     sound_duration = 1
     global last_play_time
     size = choreography_manager.return_size("r")
-    YOUR_THRESHOLD = 0.64
+    YOUR_THRESHOLD = 0.41
     dp_per_joints = [0]*8
 
     dp_sum = 0

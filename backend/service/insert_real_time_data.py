@@ -35,6 +35,8 @@ def _compare(compare_manager, data):
                 compare_manager.down_two_times[0][index][3:6] = value["vector"]
                 compare_manager.front_back[0][index][0:3] = value["world_position"]
                 compare_manager.front_back[0][index][3:6] = value["vector"]
+                compare_manager.side_walk[0][index][0:3] = value["world_position"]
+                compare_manager.side_walk[0][index][3:6] = value["vector"]
         elif i <= 10:
             continue
         elif i <= 14:
@@ -65,6 +67,9 @@ def _compare(compare_manager, data):
             compare_manager.front_back[i-18][index][0:3] = value["world_position"]
             compare_manager.front_back[i-18][index][3:6] = value["vector"]
 
+            compare_manager.side_walk[i-18][index][0:3] = value["world_position"]
+            compare_manager.side_walk[i-18][index][3:6] = value["vector"]
+
             # l_arm_and_leg_side
             compare_manager.l_arm_and_leg_side[i-15][index][0:3] = value["world_position"]
             compare_manager.l_arm_and_leg_side[i-15][index][3:6] = value["vector"]
@@ -77,6 +82,11 @@ def _compare(compare_manager, data):
             # front_back
             compare_manager.front_back[i-18][index][0:3] = value["world_position"]
             compare_manager.front_back[i-18][index][3:6] = value["vector"]
+
+            # print(f"i={i}, i-18={i-18}, side_walk length={len(compare_manager.side_walk)}")
+            # side_walk
+            compare_manager.side_walk[i-18][index][0:3] = value["world_position"]
+            compare_manager.side_walk[i-18][index][3:6] = value["vector"]
 
             # r_arm_and_leg_side
             compare_manager.r_arm_and_leg_side[i-19][index][0:3] = value["world_position"]

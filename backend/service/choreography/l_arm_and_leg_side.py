@@ -13,7 +13,7 @@ def l_arm_and_leg_side(compare_manager, choreography_manager, index):
     sound_duration = 1
     global last_play_time
     size = choreography_manager.return_size("l")
-    YOUR_THRESHOLD = 0.68
+    YOUR_THRESHOLD = 0.38
     dp_per_joints = [0]*8
 
     dp_sum = 0
@@ -28,7 +28,7 @@ def l_arm_and_leg_side(compare_manager, choreography_manager, index):
 
     ave = dp_sum/(size*8)
     # print(dp_per_joints)
-    print("l_arm_and_leg_side ave : ", ave)
+    # print("l_arm_and_leg_side ave : ", ave)
 
     if ave < YOUR_THRESHOLD:
         current_time = time.time()

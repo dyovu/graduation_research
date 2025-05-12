@@ -3,13 +3,12 @@ import logging
 import re
 from typing import Optional
 
-from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from sqlalchemy.orm import Session 
 
 import backend.schemas.choreography as choreography_schemas
 # import backend.models.choreography as choreography_models
 # import backend.models.choreography_nc as choreography_models
-# import backend.models.choreography_pq as choreography_models
+import backend.models.choreography_pq as choreography_models
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,6 +32,8 @@ def insert_bvh(db: Session, q: queue.Queue, file_name):
             insert_l_arm_and_leg_side(db, q, file_name)
         case "RArmAndLegSide":
             insert_r_arm_and_leg_side(db, q, file_name)
+        case "sideWalk":
+            insert_side_Walk(db, q, file_name)
     
 
 #
@@ -238,6 +239,38 @@ def _create_r_arm_and_leg_side(q: queue.Queue):
         vec = tmp_data[str(i+23)]["vector"].tolist()
         data_dict[columns[i+4]] = pos + vec
     return choreography_schemas.RightArmAndLegSideCreate(**data_dict)
+
+
+def insert_side_Walk(db: Session, q: queue.Queue, file_name):
+    print("insert_side_Walk")
+    db_objs = []
+    count = 0
+
+    check_name_match(file_name, choreography_models.SideWalk.__tablename__)
+
+    while not q.empty():
+        insert_data = _create_side_Walk(q)
+        db_obj = choreography_models.SideWalk(**insert_data.dict())
+        db_objs.append(db_obj)
+        count += 1
+
+    db.bulk_save_objects(db_objs)
+    db.commit()
+
+def _create_side_Walk(q: queue.Queue):
+    tmp_data = q.get()
+    data_dict ={}
+    columns = ["root", "l_up_leg", "l_low_leg", "l_foot", "l_toes", "r_up_leg", "r_low_leg", "r_foot", "r_toes"]
+
+    pos = tmp_data["0"]["world_position"].tolist()
+    vec = tmp_data["0"]["vector"].tolist()
+    data_dict[columns[0]] = pos + vec
+
+    for i in range(8):
+        pos = tmp_data[str(i+19)]["world_position"].tolist()
+        vec = tmp_data[str(i+19)]["vector"].tolist()
+        data_dict[columns[i+1]] = pos + vec
+    return choreography_schemas.SideWalkCreate(**data_dict)
 
 
 

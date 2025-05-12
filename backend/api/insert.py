@@ -20,6 +20,7 @@ router = APIRouter(tags=["insert"])
 """
 main_path = 'backend/motion_data/'
 file_names = ["clapOverHead", "downTwoTimes", "frontBack", "jump", "LArmAndLegSide", "RArmAndLegSide"]
+one_file_name = "sideWalk"
 
 @router.get(
     "/insert_data"
@@ -47,7 +48,7 @@ async def insert_data_to_db(
     """
         特定のファイルだけDBに入れたい時
     """
-    # file_name = file_names[0]
+    # file_name = one_file_name
     # motion_lines = read_bvh(main_path + file_name + ".BVH")
     # print(motion_lines)
     # # motion dataの部分を計算する

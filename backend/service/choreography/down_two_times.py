@@ -13,7 +13,7 @@ def down_two_times(compare_manager, choreography_manager, index):
     sound_duration = 1
     global last_play_time
     size = choreography_manager.return_size("d")
-    YOUR_THRESHOLD = 0.79
+    YOUR_THRESHOLD = 0.75
     dp_per_joints = [0]*9
 
     dp_sum = 0
@@ -27,7 +27,7 @@ def down_two_times(compare_manager, choreography_manager, index):
 
     ave = dp_sum/(size*8)
     # print(dp_per_joints)
-    print("down_two_times ave : ", ave)
+    # print("down_two_times ave : ", ave)
 
     if ave < YOUR_THRESHOLD:
         current_time = time.time()

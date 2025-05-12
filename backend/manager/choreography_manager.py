@@ -9,6 +9,7 @@ class ChoreographyManager:
     _jump_size = 81
     _l_arm_and_leg_side_size = 124
     _r_arm_and_leg_side_size = 99
+    _side_walk = 223
 
 
     def __new__(cls):
@@ -21,6 +22,7 @@ class ChoreographyManager:
             cls._instance.jump = cls._instance._initialize_movement_list(cls._jump_size, 6)
             cls._instance.l_arm_and_leg_side = cls._instance._initialize_movement_list(cls._l_arm_and_leg_side_size, 8)
             cls._instance.r_arm_and_leg_side = cls._instance._initialize_movement_list(cls._r_arm_and_leg_side_size, 8)
+            cls._instance.side_walk = cls._instance._initialize_movement_list(cls._side_walk, 9)
         return cls._instance
     
     @staticmethod
@@ -42,6 +44,8 @@ class ChoreographyManager:
                 return cls._l_arm_and_leg_side_size
             case "r":
                 return cls._r_arm_and_leg_side_size
+            case "s":
+                return cls._side_walk
             
     def is_empty(self):
         if self.clap_over_head[0][4] and self.clap_over_head[1][45] and self.clap_over_head[3][17]:

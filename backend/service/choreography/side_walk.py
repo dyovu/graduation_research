@@ -5,40 +5,40 @@ from scipy.spatial.distance import cosine, euclidean
 import pygame
 pygame.mixer.init()
 
-is_playing_lock_front_back = threading.Lock()
+is_playing_lock_side_walk = threading.Lock()
 last_play_time = 0
-sound = pygame.mixer.Sound("backend/sounds/piano1_2re.mp3")
+sound = pygame.mixer.Sound("backend/sounds/guitar3.mp3")
 
 
-def front_back(compare_manager, choreography_manager, index):
+def side_walk(compare_manager, choreography_manager, index):
     global last_play_time
     sound_duration = 1
     size = choreography_manager.return_size("f")
-    YOUR_THRESHOLD = 0.48
+    YOUR_THRESHOLD = 0.5
 
     dp_sum = 0
     for i in range(9):
-        reference_pos = compare_manager.front_back[i][index-size][0:3]
+        reference_pos = compare_manager.side_walk[i][index-size][0:3]
         for j in range(size):
-            euclid = euclidean(compare_manager.front_back[i][index-size+j][0:3] - reference_pos, choreography_manager.front_back[i][j][0:3])
-            cos_sim = cosine(compare_manager.front_back[i][index-size+j][3:6], choreography_manager.front_back[i][j][3:6])
+            euclid = euclidean(compare_manager.side_walk[i][index-size+j][0:3] - reference_pos, choreography_manager.side_walk[i][j][0:3])
+            cos_sim = cosine(compare_manager.side_walk[i][index-size+j][3:6], choreography_manager.side_walk[i][j][3:6])
             dp_value = euclid*cos_sim
             dp_sum += dp_value
 
     ave = dp_sum/(size*8)
     # print(dp_per_joints)
-    print("front_back ave : ", ave)
+    print("side_walk ave : ", ave)
 
     if ave < YOUR_THRESHOLD:
         current_time = time.time()
-        with is_playing_lock_front_back:  # ロックを取得して音声再生の状態を更新
+        with is_playing_lock_side_walk:  # ロックを取得して音声再生の状態を更新
             if (current_time - last_play_time) > sound_duration:
                 last_play_time = current_time
-                threading.Thread(target=piano1_2re).start()
+                threading.Thread(target=guitar3).start()
 
 
 
-def piano1_2re():
+def guitar3():
     print("音楽再生開始")
     print(time.time())
     channel = pygame.mixer.find_channel()  # 空いているチャンネルを探す

@@ -96,3 +96,19 @@ class RightArmAndLegSide(Base):
     r_foot = Column(JSON, nullable=False)
     r_toes = Column(JSON, nullable=False)
 
+
+class SideWalk(Base):
+    __tablename__ = "sidde_walk_pq"
+
+    id = Column(Integer, primary_key=True, index = True)
+    root = Column(JSON, nullable=False)
+    
+    l_up_leg = Column(JSON, nullable=False)
+    l_low_leg = Column(JSON, nullable=False)
+    l_foot = Column(JSON, nullable=False)
+    l_toes = Column(JSON, nullable=False)
+
+    r_up_leg = Column(JSON, nullable=False)
+    r_low_leg = Column(JSON, nullable=False)
+    r_foot = Column(JSON, nullable=False)
+    r_toes = Column(JSON, nullable=False)

@@ -2,7 +2,7 @@ from database import Base, db_engine
 from backend.models.body_parts import RightArm, RightArmTurn, LeftArmTurn
 # from backend.models.choreography import ClapOverHead, DownTwoTimes, FrontBack, Jump, LeftArmAndLegSide, RightArmAndLegSide
 # from backend.models.choreography_nc import ClapOverHead, DownTwoTimes, FrontBack, Jump, LeftArmAndLegSide, RightArmAndLegSide
-from backend.models.choreography_pq import ClapOverHead, DownTwoTimes, FrontBack, Jump, LeftArmAndLegSide, RightArmAndLegSide
+from backend.models.choreography_pq import ClapOverHead, DownTwoTimes, FrontBack, Jump, LeftArmAndLegSide, RightArmAndLegSide, SideWalk
 
 
 # def reset_database():
@@ -43,10 +43,12 @@ def create_LeftArmAndLegSide():
 def create_RightArmAndLegSide():
     RightArmAndLegSide.__table__.create(bind=db_engine)
 
+def create_SideWalk():
+    SideWalk.__table__.create(bind=db_engine)
+
 
 def exec():
-    # drop_all_coreography()
-    # create_all_coreography()
+    create_SideWalk()
     print("OK")
     pass
 

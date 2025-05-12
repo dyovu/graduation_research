@@ -1,8 +1,6 @@
 import socket
 import threading
-import asyncio 
-import os
-import time
+import numpy as np
 
 
 from backend.mcp_receiver.process_packet import process_packet
@@ -56,6 +54,7 @@ class Receiver():
 
     def loop(self,use_insert_right_arm):
         print("loop")
+        np.set_printoptions(precision=17)
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.socket.bind((self.addr, self.port))
         self.socket.settimeout(1.0)
@@ -67,8 +66,8 @@ class Receiver():
                 message, client_addr = self.socket.recvfrom(2048)
                 data = process_packet(message)
 
-                converted_data = convert_tran_data(data, previous)
-                # converted_data = convert_tran_data_pq(data, previous)
+                # converted_data = convert_tran_data(data, previous)
+                converted_data = convert_tran_data_pq(data, previous)
 
                 # print("data", data)
                 # print("converted_data", converted_data)
@@ -80,6 +79,7 @@ class Receiver():
                     if not previous == {} and converted_data != None:
                         insert_real_time_data(previous)
                         compare(self.choreography_manager)
+                        pass
                 
 
                 # skdfでNoneが帰ってくる可能性がある

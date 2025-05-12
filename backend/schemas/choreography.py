@@ -140,3 +140,25 @@ class RightArmAndLegSideRead(RightArmAndLegSide):
         from_attributes = True 
 
 
+class SideWalk(BaseModel):
+    root: List[float] = Field(..., min_items=6, max_items=6)
+
+    l_up_leg: List[float] = Field(..., min_items=6, max_items=6)
+    l_low_leg: List[float] = Field(..., min_items=6, max_items=6)
+    l_foot: List[float] = Field(..., min_items=6, max_items=6)
+    l_toes: List[float] = Field(..., min_items=6, max_items=6)
+
+    r_up_leg: List[float] = Field(..., min_items=6, max_items=6)
+    r_low_leg: List[float] = Field(..., min_items=6, max_items=6)
+    r_foot: List[float] = Field(..., min_items=6, max_items=6)
+    r_toes: List[float] = Field(..., min_items=6, max_items=6)
+
+class SideWalkCreate(SideWalk):
+    pass
+
+class SideWalkkRead(SideWalk):
+    id: int
+
+    class Config:
+        orm_mode = True  
+        from_attributes = True 

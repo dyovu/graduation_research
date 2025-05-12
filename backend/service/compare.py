@@ -9,12 +9,15 @@ from backend.service.choreography.front_back import front_back
 from backend.service.choreography.jump import jump
 from backend.service.choreography.l_arm_and_leg_side import l_arm_and_leg_side
 from backend.service.choreography.r_arm_and_leg_side import r_arm_and_leg_side
+from backend.service.choreography.side_walk import side_walk
 
 """
     値が小さい方が類似度が高い、閾値を上限としてそれ以下なら音を鳴らす
     予定としては 0.2(m)*0.3(45度)で0.06以下なら音を鳴らす?
     frameの数が違うから平均とか合計じゃない方がいいかも？
 """
+
+pygame.mixer.set_num_channels(16)
 
 def compare(
     choreography_manager,
@@ -29,7 +32,7 @@ def compare(
     # start = time.time()
     if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("c")):
         # start = time.time()
-        clap_over_head(compare_manager, choreography_manager, current_index)
+        # clap_over_head(compare_manager, choreography_manager, current_index)
         # print("run time clap_over_head : " ,time.time() - start)
         pass
     
@@ -41,27 +44,33 @@ def compare(
 
     if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("j")):
         # start = time.time()
-        jump(compare_manager, choreography_manager, current_index)
+        # jump(compare_manager, choreography_manager, current_index)
+        # print("run time jump : " ,time.time() - start)
+        pass
+
+    if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("s")):
+        # start = time.time()
+        # side_walk(compare_manager, choreography_manager, current_index)
         # print("run time jump : " ,time.time() - start)
         pass
         
-    if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("l")):
-        # start = time.time()
-        l_arm_and_leg_side(compare_manager, choreography_manager, current_index)
-        # print("run time l_arm_and_leg_side : " ,time.time() - start)
-        pass
+    # if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("l")):
+    #     # start = time.time()
+    #     # l_arm_and_leg_side(compare_manager, choreography_manager, current_index)
+    #     # print("run time l_arm_and_leg_side : " ,time.time() - start)
+    #     pass
     
-    if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("r")):
+    # if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("r")):
         # start = time.time()
-        r_arm_and_leg_side(compare_manager, choreography_manager, current_index)
+        # r_arm_and_leg_side(compare_manager, choreography_manager, current_index)
         # print("run time r_arm_and_leg_side : " ,time.time() - start)
-        pass
+        # pass
 
-    if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("d")):
-        # start = time.time()
-        # down_two_times(compare_manager, choreography_manager, current_index)
-        # print("run time down_two_times : " ,time.time() - start)
-        pass
+    # if compare_manager.current_index%6 == 0 and  (compare_manager.current_index > choreography_manager.return_size("d")):
+    #     # start = time.time()
+    #     down_two_times(compare_manager, choreography_manager, current_index)
+    #     # print("run time down_two_times : " ,time.time() - start)
+    #     pass
     # print("run time all : " ,time.time() - start)
 
 
